@@ -52,7 +52,7 @@ ngMainPageUserApp.controller("lanesController", function ($scope, $window, lanes
             });
         })
     },
-        1000);
+        500);
 
     $scope.viewQueue = function (lane) {
         sessionStorage.setItem("LaneNumber", lane.LaneNumber);
