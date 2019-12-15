@@ -5,27 +5,6 @@ VisualStudioVersion = 15.0.28307.960
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "COE184P_QueueingSystem_Website", "COE184P_QueueingSystem_Website\COE184P_QueueingSystem_Website.jsproj", "{B8304B82-917C-4F55-86AD-484F0D0FA68F}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "COE184P_QueueingSystem", "http://localhost/COE184P_QueueingSystem", "{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}"
-	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "false"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
-		Debug.AspNetCompiler.VirtualPath = "/COE184P_QueueingSystem"
-		Debug.AspNetCompiler.PhysicalPath = "E:\IIS Websites\COE184P_QueueingSystem\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\COE184P_QueueingSystem\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/COE184P_QueueingSystem"
-		Release.AspNetCompiler.PhysicalPath = "E:\IIS Websites\COE184P_QueueingSystem\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\COE184P_QueueingSystem\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "E:\IIS Websites\COE184P_QueueingSystem\"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Android = Debug|Android
@@ -74,30 +53,6 @@ Global
 		{B8304B82-917C-4F55-86AD-484F0D0FA68F}.Release|Windows-x86.ActiveCfg = Release|Windows-x86
 		{B8304B82-917C-4F55-86AD-484F0D0FA68F}.Release|Windows-x86.Build.0 = Release|Windows-x86
 		{B8304B82-917C-4F55-86AD-484F0D0FA68F}.Release|Windows-x86.Deploy.0 = Release|Windows-x86
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Android.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Android.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|iOS.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|iOS.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Windows-ARM.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Windows-x64.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Debug|Windows-x86.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Android.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Android.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|iOS.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|iOS.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Windows-ARM.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Windows-ARM.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Windows-x64.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Windows-x64.Build.0 = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Windows-x86.ActiveCfg = Debug|Any CPU
-		{2DEDA268-2EAB-482A-947D-0ED8F3CF92B1}.Release|Windows-x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
