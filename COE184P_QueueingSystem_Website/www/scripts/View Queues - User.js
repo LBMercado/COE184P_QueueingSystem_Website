@@ -59,7 +59,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 (status) => { console.log("ERROR: Unable to retrieve queued user information: error code " + status); });
         })
     },
-        1000);
+        500);
 
     setInterval(() => {
         $scope.$apply(() => {
@@ -80,7 +80,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 (status) => { console.log("ERROR: Unable to retrieve user ticket information: error code " + status); });
         })
     },
-        1000);
+        500);
 
     setInterval(() => {
         $scope.$apply(() => {
@@ -92,7 +92,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
             $scope.userInfo.Email = sessionStorage.getItem("Email");
         })
     },
-        2000);
+        500);
 
     setInterval(() => {
         $scope.$apply(() => {
@@ -103,7 +103,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 (status) => { console.log("ERROR: Unable to retrieve attendant information: error code " + status); });
         })
     },
-        2000);
+        500);
 
     
     $scope.enqueueUser = function () {

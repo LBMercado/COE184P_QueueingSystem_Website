@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="ViewLaneAttendantApp">
 <head>
     <!--<title>Login V11</title>
     <meta charset="UTF-8">-->
@@ -26,38 +26,41 @@
 <body>
     <div class="limiter">
         <div class="container-main-user">
-            <div class="wrap-main-user">
+            <div class="wrap-main-user" ng-controller="queueController">
                 <label for="User">User: &nbsp </label>
                 <label id="User">
-                    <a class="txt hov1" href="#">Usher</a>
+                    <a class="txt hov1" href="#" ng-model="userInfo" ng-init="userInfo = { 'Email':'USER_PLACEHOLDER_EMAIL' }">{{userInfo.Email}}</a>
                 </label>
                 <div class="queue--yama">
-                    <div class="queue__item">
-                        <h3 class="queue__title" id="Department">Customer Service</h3>
-                        <p class="queue__sentence">Logged as: Attendant</p>
+                    <div class="queue__item" ng-model="queueList">
+                        <h3 class="queue__title" id="Department" ng-model="lane" ng-init="lane = {'LaneName':'LANE_NAME_UNSET'}">{{lane.LaneName}}</h3>
+                        <p class="queue__sentence" ng-model="attendant">Attendant: {{attendant.FirstName + attendant.MiddleName + attendant.LastName}}</p>
                         <p class="queue__sentence">Currently Serving</p>
-                        <div class="queue__price" id="CurrentlyServing">
-                            23
-                            <span class="queue__period" id="QueueList">24 &nbsp;26 &nbsp;23 &nbsp;22</span>
+                        <div class="queue__price" id="CurrentlyServing" ng-model="frontQueued" ng-init="frontQueued = 'Looks Empty...'">
+                            {{frontQueued}}
+                            <span class="queue__period" id="QueueList" ng-model="queue" ng-repeat="queue in queueList.slice(1,queueList.length)">{{queue}} &nbsp;</span>
                         </div>
-                        <button class="queue__action" id="Back">Finish Currently Serving</button>
+                        <button class="queue__action" id="Back" ng-model="isFrontOngoing" ng-disabled="!isFrontOngoing" ng-click="finishCurrentlyServing()">Finish Currently Serving</button>
 
-                        <button class="queue__action" id="Back">Get Next in Queue</button>
+                        <button class="queue__action" id="Back" ng-model="isEmptyQueue" ng-disabled="isEmptyQueue" ng-click="getNextServing()">Get Next in Queue</button>
                         <div></div>
-                        <button class="queue__action" id="Back">Return</button>
+                        <button class="queue__action" id="Back" ng-click="goBackToMainPage()">Return</button>
                     </div>
                 </div>
             </div>
         </div>
         <!--===============================================================================================-->
         <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+        <script src="lib/angular.min.js"></script>
         <!--===============================================================================================-->
         <script src="vendor/bootstrap/js/popper.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
         <!--===============================================================================================-->
         <script src="vendor/select2/select2.min.js"></script>
         <!--===============================================================================================-->
-        <script src="js/main.js"></script>
+        <script src="scripts/dependencies.js"></script>
+        <script src="scripts/View Queues - User.js"></script>
+        <script src="scripts/View Lane - Attendant.js"></script>
 
 </body>
 </html>

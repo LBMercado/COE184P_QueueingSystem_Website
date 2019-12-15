@@ -31,7 +31,7 @@ ngMainPageUserApp.factory("lanesService", function($http) {
     return lanesFactory;
 });
 
-ngMainPageUserApp.controller("lanesController", function ($scope, $timeout, $window, $filter, lanesService) {
+ngMainPageUserApp.controller("lanesController", function ($scope, $window, lanesService) {
 
     setInterval(() => {
         $scope.$apply(() => {
