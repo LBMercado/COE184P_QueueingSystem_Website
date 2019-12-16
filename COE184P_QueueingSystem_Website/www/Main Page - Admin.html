@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="MainPageAdminApp">
 <head>
     <!--<title>Login V11</title>
     <meta charset="UTF-8">-->
@@ -27,29 +27,23 @@
 
     <div class="limiter">
         <div class="container-main-user">
-            <div class="wrap-main-user p-l-15 p-r-20 p-t-12 p-b-12">
+            <div class="wrap-main-user p-l-15 p-r-20 p-t-12 p-b-12" ng-controller="lanesController">
                 <label for="User">User: &nbsp </label>
                 <label id="User">
-                    <a class="txt hov1" href="#">Usher</a>
+                    <a class="txt hov1" href="View Info - All.html" ng-model="userInfo" ng-init="userInfo = { 'Email':'USER_PLACEHOLDER_EMAIL' }">{{userInfo.Email}}</a>
                 </label>
                 <div class="queue--yama">
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Admin</h3>
                         <p class="queue__sentence">Main Page</p>
-                        <button class="queue__action" id="CustomerService"> Lane #1<br />Customer Service</button>
-                        <button class="queue__action" id="Cashier"> Lane #2<br />Cashier</button>
-                        <button class="queue__action" id="Customer Service"> Lane #3<br />Customer Service</button>
+                        <button class="queue__action" id="CustomerService" ng-model="lanes" ng-repeat="lane in lanes" ng-click="goToEditLane(lane.LaneNumber)"> Lane {{lane.LaneNumber}}<br />{{lane.LaneName}}</button>
 
                         <div class="container-login100-form-btn p-t-25">
-                            <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
+                            <button id="addNewUser_Button" class="main-user-form-btn-secondary " ng-click="goToAddUser()">
                                Add New User
                             </button>
 
-                            <button id="EditLane_Button" class="main-user-form-btn-secondary ">
-                                Edit Lane
-                            </button>
-
-                            <button id="addNewLane_Button" class="main-user-form-btn-secondary ">
+                            <button id="addNewLane_Button" class="main-user-form-btn-secondary " ng-click="goToAddLane()">
                                 Add New Lane
                             </button>
 
@@ -61,13 +55,16 @@
     </div>
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="lib/angular.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/bootstrap/js/popper.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/select2/select2.min.js"></script>
     <!--===============================================================================================-->
-    <script src="js/main.js"></script>
+    <script src="scripts/dependencies.js"></script>
+    <script src="scripts/Main Page - User.js"></script>
+    <script src="scripts/Main Page - Admin.js"></script>
 
 </body>
 </html>

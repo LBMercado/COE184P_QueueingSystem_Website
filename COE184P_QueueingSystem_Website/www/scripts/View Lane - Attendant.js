@@ -39,6 +39,8 @@ ngViewLaneAttendantApp.factory("viewLaneAttendantService", function ($http, view
 });
 
 ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $window, $location, viewLaneAttendantService) {
+    $scope.userInfo = { "Email": "USER_PLACEHOLDER_EMAIL" };
+
     setInterval(() => {
         $scope.$apply(() => {
             viewLaneAttendantService.getQueuedUserNumbers(sessionStorage.getItem("LaneNumber"))

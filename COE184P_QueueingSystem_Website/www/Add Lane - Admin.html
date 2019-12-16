@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="AddLaneApp">
 <head>
     <!--<title>Login V11</title>
     <meta charset="UTF-8">-->
@@ -22,33 +22,34 @@
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!--===============================================================================================-->
+    
 </head>
 <body>
     <div class="limiter">
         <div class="container-main-user">
             <div class="wrap-main-user p-l-15 p-r-20 p-t-12 p-b-12">
-                <label for="User">&nbspADMIN:  &nbsp </label>
-                <label id="User">
-                    <a class="txt hov1" href="#">ADMIN</a>
+                <label for="User" >&nbspADMIN:  &nbsp </label>
+                <label id="User" ng-controller="userInfoController">
+                    <a class="txt hov1" href="View Info - All.html">{{userInfo.Email}}</a>
                 </label>
                 <div class="queue--yama">
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Add New Lane</h3>
 
 
-                        <div class="container-login100-form-btn p-t-25">
+                        <div class="container-login100-form-btn p-t-25" ng-controller="laneInfoController">
                             <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                <span>Lane #4: </span> &nbsp;&nbsp;<span>Cashier</span>
+                                <span>Lane #{{nextLaneNumber}}: {{newLane.LaneName}}</span> &nbsp;&nbsp;
                             </button>
                             <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                <span>John P. Hayes</span> &nbsp;&nbsp;<span>ID: </span><span>0020000006</span>
+                                <span>{{assignedAtt.FirstName + ' ' + assignedAtt.MiddleName + ' ' + assignedAtt.LastName}}</span> &nbsp;&nbsp;<span>ID: </span><span>{{assignedAtt.QueueAttendantID}}</span>
                             </button>
                             <div>
                                 <div class="flex">
 
                                     <div>
                                         <div class="input-group">
-                                            <input class="reset-password-line" name="previousPassword" placeholder="Lane Name">
+                                            <input class="reset-password-line" name="previousPassword" placeholder="Lane Name" ng-model="newLane.LaneName">
                                         </div>
                                     </div>
 
@@ -58,53 +59,41 @@
 
                                     <div>
                                         <div class="select-edit">
-                                            <select>
-                                                <option value="admin">Attendant ID </option>
-                                                <option value="ID">10841023</option>
+                                            <select ng-model="selectedAttID"
+                                                    ng-options="attOpt for attOpt in attOptions">
                                             </select>
                                         </div>
                                     </div>
                                 </div>
-                                <button class="queue__action" id="FinalizeAddLane">Finalize and Add Lane</button>
+                                <button class="queue__action" id="FinalizeAddLane" ng-click="addNewLane(newLane, selectedAttID)">Finalize and Add Lane</button>
 
 
 
 
                                 <h3 class="queue__title" id="Department">Available Attendants</h3>
                                 <div class="container-login100-form-btn p-t-25">
-                                    <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                        <span>John P. Hayes</span> &nbsp;&nbsp;<span>ID: </span><span>0020000006</span>
+                                    <button id="addNewUser_Button" class="main-user-form-btn-secondary " ng-click="selectedAttID = att.QueueAttendantID" ng-repeat="att in availAttendants">
+                                        <span>{{att.FirstName + ' ' + att.MiddleName + ' ' + att.LastName}}</span> &nbsp;&nbsp;<span>ID: </span><span>{{att.QueueAttendantID}}</span>
                                     </button>
-
-                                    <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                        <span>ELena P. Hayes</span> &nbsp;&nbsp;<span>ID: </span><span>0020000007</span>
-                                    </button>
-
-                                    <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                        <span>Marcus P. Hoyt</span> &nbsp;&nbsp;<span>ID: </span><span>0020000009</span>
-                                    </button>
-
-                                    <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                        <span>Joy Z. Capiz</span> &nbsp;&nbsp;<span>ID: </span><span>0020000010</span>
-                                    </button>
-
                                 </div>
 
 
-                                <button class="queue__action" id="Back">back</button>
+                                <button class="queue__action" id="Back" ng-click="goToMainPage()">back</button>
                             </div>
                         </div>
                     </div>
         </div>
         <!--===============================================================================================-->
         <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+        <script src="lib/angular.min.js"></script>
         <!--===============================================================================================-->
         <script src="vendor/bootstrap/js/popper.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
         <!--===============================================================================================-->
         <script src="vendor/select2/select2.min.js"></script>
         <!--===============================================================================================-->
-        <script src="js/main.js"></script>
+        <script src="scripts/dependencies.js"></script>
+        <script src="scripts/Add Lane - Admin.js"></script>
 
 </body>
 </html>
