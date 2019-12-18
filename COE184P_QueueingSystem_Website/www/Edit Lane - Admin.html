@@ -45,7 +45,7 @@
                                     <button type="button" class="queue__action2" ng-click="nameCtrl.editLaneName(nameCtrl.thisLane)">Change Lane Name</button>
                                 </div>
                             </div>
-                            
+
                         </div>
 
                         <div class="flex">
@@ -53,14 +53,13 @@
                             <div>
                                 <div class="select-edit" ng-controller="laneEditAttController as editCtrl">
                                     <select ng-model="editCtrl.selAttID"
-                                            ng-options="attOpt for attOpt in editCtrl.attOptions">
-                                    </select>
+                                            ng-options="attOpt for attOpt in editCtrl.attOptions"></select>
                                     <div>
                                         <button type="button" class="queue__action2" ng-click="editCtrl.editLaneAttendant(editCtrl.thisLane.LaneNumber,editCtrl.selAttID)">Change Attendant</button>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
 
 
@@ -68,7 +67,10 @@
                         <div ng-controller="assignedAttController as assignedAttCtrl">
                             <div class="container-login100-form-btn p-t-25" ng-if="assignedAttCtrl.assignedAtt != null">
                                 <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                    <span>{{assignedAttCtrl.assignedAtt.FirstName + ' ' + assignedAttCtrl.assignedAtt.MiddleName + ' ' + assignedAttCtrl.assignedAtt.LastName}}</span> &nbsp;&nbsp;<span>ID: </span><span>{{assignedAttCtrl.assignedAtt.QueueAttendantID}}</span>
+                                    <span>{{assignedAttCtrl.assignedAtt.FirstName + ' ' + assignedAttCtrl.assignedAtt.MiddleName + ' ' + assignedAttCtrl.assignedAtt.LastName}}</span>
+                                    &nbsp;&nbsp;
+                                    <span>ID: </span>
+                                    <span>{{assignedAttCtrl.assignedAtt.QueueAttendantID}}</span>
                                 </button>
                             </div>
                             <div class="container-login100-form-btn p-t-25" ng-if="assignedAttCtrl.assignedAtt == null">
@@ -89,25 +91,27 @@
                         <div class="container-login100-form-btn p-t-25" ng-controller="viewAttController as viewAttCtrl">
                             <button id="addNewUser_Button" class="main-user-form-btn-secondary " ng-click="viewAttCtrl.selAttID = att.QueueAttendantID" ng-repeat="att in viewAttCtrl.availAtts">
                                 <span>{{att.FirstName + ' ' + att.MiddleName + ' ' + att.LastName}}</span> &nbsp;&nbsp;<span>ID: </span><span>{{att.QueueAttendantID}}</span>
+                                <span>Is Assigned: {{att.DesignatedLane.LaneName != null}}</span>
                             </button>
                         </div>
 
                         <button class="queue__action" id="Back" ng-controller="returnPageController as retPageCtrl" ng-click="retPageCtrl.goToMainPage()">back</button>
                     </div>
-                    </div>
-                    </div>
+                </div>
+            </div>
         </div>
-        <!--===============================================================================================-->
-        <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-        <script src="lib/angular.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="vendor/bootstrap/js/popper.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="vendor/select2/select2.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="scripts/dependencies.js"></script>
-        <script src="scripts/Edit Lane - Admin.js"></script>
+    </div>
+    <!--===============================================================================================-->
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="lib/angular.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="scripts/dependencies.js"></script>
+    <script src="scripts/Edit Lane - Admin.js"></script>
 
 </body>
 </html>

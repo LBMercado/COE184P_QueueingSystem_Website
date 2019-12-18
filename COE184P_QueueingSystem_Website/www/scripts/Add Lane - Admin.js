@@ -12,6 +12,10 @@ ngAddLaneApp.factory("addLaneService", function ($http) {
             }
     };
 
+    var convertDateToTimeSpan = function (date) {
+        return "PT" + date.getHours() + "H" + date.getMinutes() + "M" + date.getSeconds() + "S";
+    };
+
     addLaneFactory.getLaneCount = function () {
         return $http.get(
             SERVICE_ENDPOINTURL + "GetLaneCount", httpConfig
@@ -24,12 +28,13 @@ ngAddLaneApp.factory("addLaneService", function ($http) {
         );
     };
     
-    addLaneFactory.setLaneAttendant = function (laneNumber, attID) {
+    addLaneFactory.setLaneAttendant = function (laneNumber, attID, tolerance) {
         return $http.post(
             SERVICE_ENDPOINTURL + "SetLaneActive",
             JSON.stringify({
                 "laneNumber":laneNumber,
-                "attendantID": attID
+                "attendantID": attID,
+                "maxTolerance": convertDateToTimeSpan(tolerance)
             }), httpConfig
         );
     };
@@ -181,6 +186,8 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
 
     $scope.addNewLane = function (newLane, assignedAttID) {
         var laneToAdd = angular.copy(newLane);
+        var tolerance = new Date();
+        tolerance.setHours(23,59,59); //default tolerance of ~one day
 
         laneToAdd.LaneNumber = $scope.nextLaneNumber - 1;
         if (!laneToAdd.LaneName){
@@ -211,19 +218,19 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                 })
                 .then((data) => {
                     if (data.data["AddNewLaneResult"]) {
-                        $scope.newLane = defaultLane;
-                        $scope.selectedAttID = $scope.attOptions[0];
-                        return addLaneService.setLaneAttendant(laneToAdd.LaneNumber, assignedAttID);
+                        return addLaneService.setLaneAttendant(laneToAdd.LaneNumber, assignedAttID, tolerance);
                     } else {
                         $window.alert("Failed to add new lane.");
                         $q.reject("Failed to add new lane.");
                     }
                 })
                 .then((data) => {
-                    if (data.data["SetLaneActiveResult"])
+                    if (data.data["SetLaneActiveResult"]) {
+                        $scope.newLane = defaultLane;
+                        $scope.selectedAttID = $scope.attOptions[0];
                         $window.alert("New lane added with set attendant.");
-                    else {
-                        $window.alert("Failed to set attendant.");
+                    } else {
+                        $window.alert("ERROR: Failed to set lane active.");
                         $q.reject("Failed to set attendant to new lane.");
                     }
                 })

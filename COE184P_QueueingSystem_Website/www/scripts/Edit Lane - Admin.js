@@ -53,12 +53,26 @@ ngEditLaneApp.factory("laneInfoService", ["httpConfigFactory", "$http", function
         );
     };
 
+    factory.isLaneActiveServiceName = "IsLaneActive";
+    factory.isLaneActive = function (laneNumber) {
+        return $http.post(
+            SERVICE_ENDPOINTURL + factory.isLaneActiveServiceName,
+            JSON.stringify({
+                "laneNumber":laneNumber
+            }), httpConfig
+        );
+    };
+
     return factory;
 }]);
 
 ngEditLaneApp.factory("laneEditService", ["httpConfigFactory", "$http", function (httpConfigFactory, $http) {
     var factory = {};
     var httpConfig = httpConfigFactory;
+
+    var convertDateToTimeSpan = function (date) {
+        return "PT" + date.getHours() + "H" + date.getMinutes() + "M" + date.getSeconds() + "S";
+    };
 
     factory.editLaneServiceName = "EditLane";
     factory.editLane = function (editedLane) {
@@ -67,13 +81,25 @@ ngEditLaneApp.factory("laneEditService", ["httpConfigFactory", "$http", function
         );
     };
 
-    factory.setLaneAttendantServiceName = "SetLaneActive";
-    factory.setLaneAttendant = function (laneNumber, attID, tolerance) {
+    factory.setLaneAttendantServiceName = "SetAttendantAtLane";
+    factory.setLaneAttendant = function (laneNumber, attID) {
         return $http.post(
             SERVICE_ENDPOINTURL + factory.setLaneAttendantServiceName,
             JSON.stringify({
                 "laneNumber":laneNumber,
                 "attendantID": attID
+            }), httpConfig
+        );
+    };
+
+    factory.setLaneActiveServiceName = "SetLaneActive";
+    factory.setLaneActive = function (laneNumber, attID, tolerance) {
+        return $http.post(
+            SERVICE_ENDPOINTURL + factory.setLaneActiveServiceName,
+            JSON.stringify({
+                "laneNumber":laneNumber,
+                "attendantID": attID,
+                "maxTolerance": convertDateToTimeSpan(tolerance)
             }), httpConfig
         );
     };
@@ -205,7 +231,8 @@ ngEditLaneApp.controller("laneEditNameController", ["laneInfoService", "laneEdit
     };
 }]);
 
-ngEditLaneApp.controller("laneEditAttController", ["laneInfoService", "attendantInfoService", "laneEditService", "sharedDataFactory", "$scope", "$window", function (laneInfoService, attendantInfoService, laneEditService, sharedDataFactory, $scope, $window) {
+ngEditLaneApp.controller("laneEditAttController", ["laneInfoService", "attendantInfoService", "laneEditService", "sharedDataFactory", "$scope", "$window", "$q",
+    function (laneInfoService, attendantInfoService, laneEditService, sharedDataFactory, $scope, $window, $q) {
     this.attOptions = ["No Attendant"];
     $scope.sharedDataGet = sharedDataFactory.data;
     $scope.sharedDataSet_thisLane = function (thisLane) { sharedDataFactory.update_thisLane(thisLane); };
@@ -266,6 +293,10 @@ ngEditLaneApp.controller("laneEditAttController", ["laneInfoService", "attendant
     }, 500);
 
     this.editLaneAttendant = function (laneNumber, selectedAttID) {
+        var isActive = false;
+        var tolerance = new Date();
+        tolerance.setHours(23,59,59); //~1 day tolerance
+
         if (typeof laneNumber === "undefined") {
             console.log("ERROR: cannot edit lane attendant - lane number is undefined.");
             return;
@@ -279,14 +310,29 @@ ngEditLaneApp.controller("laneEditAttController", ["laneInfoService", "attendant
                         $window.alert("Successfully unset attendant in lane.");
                     }
                     else
-                        console.log("ERROR: Failed to unset attendant in lane.");
+                        $window.alert("Lane is already inactive.");
                 })
                 .catch((reason) => { console.log("ERROR: " + reason) });
         }
         else {
-            laneEditService.setLaneAttendant(laneNumber, selectedAttID)
+            //check if lane is active
+            laneInfoService.isLaneActive(laneNumber)
                 .then((data) => {
-                    if (data.data[laneEditService.setLaneAttendantServiceName + "Result"]) {
+                    isActive = data.data[laneInfoService.isLaneActiveServiceName + "Result"];
+                    console.log("DEBUG: Lane is active? " + isActive);
+                    if (isActive)
+                        return laneEditService.setLaneAttendant(laneNumber, selectedAttID);
+                    else
+                        return laneEditService.setLaneActive(laneNumber, selectedAttID, tolerance);
+                })
+                .then((data) => {
+                    var success;
+                    if (isActive)
+                        success = data.data[laneEditService.setLaneAttendantServiceName + "Result"];
+                    else
+                        success = data.data[laneEditService.setLaneActiveServiceName  + "Result"];
+
+                    if (success) {
                         this.refreshLaneInfo();
                         $window.alert("Successfully set attendant in lane.");
                     }
