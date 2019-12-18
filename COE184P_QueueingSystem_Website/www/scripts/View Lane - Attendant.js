@@ -38,58 +38,100 @@ ngViewLaneAttendantApp.factory("viewLaneAttendantService", function ($http, view
     return viewLaneAttendantFactory;
 });
 
-ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $window, $location, viewLaneAttendantService) {
+ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $window, $location, $q, $timeout, $interval, viewLaneAttendantService) {
     $scope.userInfo = { "Email": "USER_PLACEHOLDER_EMAIL" };
+    $scope.queueList = {};
 
-    setInterval(() => {
-        $scope.$apply(() => {
-            viewLaneAttendantService.getQueuedUserNumbers(sessionStorage.getItem("LaneNumber"))
-                .then((data, status) => {
-                    $scope.queueList = data.data["GetListOfQueuedAtLaneResult"];
-                    if (typeof $scope.queueList === "undefined" || $scope.queueList.length == 0) {
-                        $scope.frontQueued = "Looks empty..."
-                    }
-                    else {
-                        $scope.frontQueued = $scope.queueList[0];
-                    }
-                },
-                (status) => { console.log("ERROR: Unable to retrieve queued user information: error code " + status); });
+    $timeout(() => {
+        var laneNumber = sessionStorage.getItem("LaneNumber");
+        /*-----------------------------------------------------------------*/
+        viewLaneAttendantService.isEmptyQueue(laneNumber)
+            .then((data, status) => {
+                $scope.isEmptyQueue = data.data["IsEmptyQueueAtLaneResult"];
+                
+                if (!$scope.isEmptyQueue)
+                    return viewLaneAttendantService.getQueuedUserNumbers(laneNumber);
+                else {
+                    $scope.frontQueued = "Looks empty..."
+                    $q.reject("INFO: queue is empty.");
+                }
+            },
+            (reason) => { console.log("queue update chain broken - " + reason); })
+            .then((data) => {
+                $scope.queueList = data.data["GetListOfQueuedAtLaneResult"];
+                $scope.frontQueued = $scope.queueList[0];
+            }, (reason) => { console.log("ERROR: failed to get list of queued."); });
+        /*-----------------------------------------------------------------*/
+        viewLaneAttendantService.peek(laneNumber)
+            .then((data, status) => {
+                var frontTick = data.data["PeekAtLaneResult"];
+                if (frontTick != null) {
+                    $scope.isFrontOngoing = frontTick["Status"] == 0;
+                    $scope.frontTicket = frontTick;
+                }
+                else
+                    $scope.isFrontOngoing == false;
+            },
+            (status) => { console.log("ERROR: Unable to retrieve front queue ticket: " + status); });
+        /*-----------------------------------------------------------------*/
+    }, 250);
 
-            viewLaneAttendantService.isEmptyQueue(sessionStorage.getItem("LaneNumber"))
-                .then((data, status) => {
-                    $scope.isEmptyQueue = data.data["IsEmptyQueueAtLaneResult"];
-                },
-                (status) => { console.log("ERROR: Unable to retrieve queue empty status: error code " + status); });
+    $interval(() => {
+        var laneNumber = sessionStorage.getItem("LaneNumber");
+        /*-----------------------------------------------------------------*/
+        viewLaneAttendantService.isEmptyQueue(laneNumber)
+            .then((data, status) => {
+                var isEmpty = data.data["IsEmptyQueueAtLaneResult"];
 
-            viewLaneAttendantService.peek(sessionStorage.getItem("LaneNumber"))
-                .then((data, status) => {
-                    var frontTick = data.data["PeekAtLaneResult"];
-                    if (frontTick != null) {
-                        $scope.isFrontOngoing = frontTick["Status"] == 0;
-                        $scope.frontTicket = frontTick;
-                    }
-                    else
-                        $scope.isFrontOngoing == false;
-                },
-                (status) => { console.log("ERROR: Unable to retrieve front queue ticket: error code " + status); });
-        })
-    },
-        500);
-    setInterval(() => {
-        $scope.$apply(() => {
-            viewLaneAttendantService.getLane(sessionStorage.getItem("LaneNumber"))
-                .then((data, status) => {
-                    $scope.lane = data.data["GetLaneResult"];
-                },
-                (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
-            $scope.userInfo.Email = sessionStorage.getItem("Email");
+                if (!$scope.isEmptyQueue)
+                    return viewLaneAttendantService.getQueuedUserNumbers(laneNumber);
+                else {
+                    $scope.frontQueued = "Looks empty..."
+                    $scope.queueList = {};
+                    $q.reject("INFO: queue is empty.");
+                }
+            },
+            (reason) => { console.log("queue update chain broken - " + reason); })
+            .then((data) => {
+                var queueList = data.data["GetListOfQueuedAtLaneResult"];
+                var queueFront = queueList[0];
 
-            viewLaneAttendantService.getAttendant(sessionStorage.getItem("LaneNumber"))
-                .then((data, status) => {
-                    $scope.attendant = data.data["GetAttendantAtLaneResult"];
-                },
-                (status) => { console.log("ERROR: Unable to retrieve attendant information: error code " + status); });
-        })
+                //reflect changes on the model only if the queue list is different
+                if (!angular.equals(queueList, $scope.queueList)) {
+                    $scope.queueList = queueList;
+                    $scope.frontQueued = queueFront;
+                }
+            }, (reason) => { console.log("ERROR: failed to get list of queued."); });
+        /*-----------------------------------------------------------------*/
+        viewLaneAttendantService.peek(laneNumber)
+            .then((data, status) => {
+                var frontTick = data.data["PeekAtLaneResult"];
+                if (frontTick != null) {
+                    $scope.isFrontOngoing = frontTick["Status"] == 0;
+                    $scope.frontTicket = frontTick;
+                }
+                else
+                    $scope.isFrontOngoing == false;
+            },
+            (status) => { console.log("ERROR: Unable to retrieve front queue ticket: " + status); });
+        /*-----------------------------------------------------------------*/
+        viewLaneAttendantService.getLane(laneNumber)
+            .then((data, status) => {
+                var lane = data.data["GetLaneResult"];
+                if (!angular.equals($scope.lane,lane))
+                    $scope.lane = lane;
+            },
+            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
+        $scope.userInfo.Email = sessionStorage.getItem("Email");
+        /*-----------------------------------------------------------------*/
+        viewLaneAttendantService.getAttendant(laneNumber)
+            .then((data, status) => {
+                var att = data.data["GetAttendantAtLaneResult"];
+                if (!angular.equals($scope.attendant,att))
+                    $scope.attendant = att;
+            },
+            (status) => { console.log("ERROR: Unable to retrieve attendant information: error code " + status); });
+        /*-----------------------------------------------------------------*/
     },
         500);
 

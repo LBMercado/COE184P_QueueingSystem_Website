@@ -31,12 +31,34 @@ ngMainPageUserApp.factory("lanesService", function($http) {
     return lanesFactory;
 });
 
-ngMainPageUserApp.controller("lanesController", function ($scope, $window, lanesService) {
+ngMainPageUserApp.controller("lanesController", function ($scope, $window, $interval, $timeout, lanesService) {
+    $scope.userInfo = { 'Email': 'USER_PLACEHOLDER_EMAIL' };
+    $scope.lanes = {};
 
-    setInterval(() => {
-        $scope.$apply(() => {
-            lanesService.getLanes()
-                .then((data, status) => {
+    $timeout(() => {
+        $scope.userInfo["Email"] = sessionStorage.getItem("Email");
+        /*------------------------------------------------------------*/
+        lanesService.getLanes()
+            .then((data, status) => {
+                $scope.lanes = data.data["GetAllLanesResult"];
+                angular.forEach($scope.lanes, (val, key) => {
+                    lanesService.isLaneActive(val["LaneNumber"]).then(
+                        (data, status) => {
+                            $scope.lanes[key]["IsActive"] = data.data["IsLaneActiveResult"];
+                        },
+                        (status) => { console.log("ERROR: Unable to retrieve lane activity information."); }
+                    );
+            },
+            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
+        });
+    }, 300);
+
+    $interval(() => {
+        lanesService.getLanes()
+            .then((data, status) => {
+                var lanes = data.data["GetAllLanesResult"];
+                //update model only if it is different
+                if (!angular.equals(lanes, $scope.lanes)) {
                     $scope.lanes = data.data["GetAllLanesResult"];
                     angular.forEach($scope.lanes, (val, key) => {
                         lanesService.isLaneActive(val["LaneNumber"]).then(
@@ -45,14 +67,11 @@ ngMainPageUserApp.controller("lanesController", function ($scope, $window, lanes
                             },
                             (status) => { console.log("ERROR: Unable to retrieve lane activity information."); }
                         );
-                },
-                (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
-            $scope.userInfo["Email"] = sessionStorage.getItem("Email");
-            
+                    },
+            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); })
+                };
             });
-        })
-    },
-        500);
+    }, 500);
 
     $scope.viewQueue = function (lane) {
         sessionStorage.setItem("LaneNumber", lane.LaneNumber);
