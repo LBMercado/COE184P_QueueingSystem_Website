@@ -189,7 +189,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
         var tolerance = new Date();
         tolerance.setHours(23,59,59); //default tolerance of ~one day
 
-        laneToAdd.LaneNumber = $scope.nextLaneNumber - 1;
+        laneToAdd.LaneNumber = $scope.nextLaneNumber;
         if (!laneToAdd.LaneName){
             $window.alert("A name is required for the lane.");
             return;

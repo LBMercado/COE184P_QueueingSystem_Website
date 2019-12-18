@@ -70,6 +70,7 @@
                                     <span>{{assignedAttCtrl.assignedAtt.FirstName + ' ' + assignedAttCtrl.assignedAtt.MiddleName + ' ' + assignedAttCtrl.assignedAtt.LastName}}</span>
                                     &nbsp;&nbsp;
                                     <span>ID: </span>
+                                    &nbsp;&nbsp;
                                     <span>{{assignedAttCtrl.assignedAtt.QueueAttendantID}}</span>
                                 </button>
                             </div>
@@ -90,7 +91,7 @@
                         <h3 class="queue__title" id="Department">Available Attendants</h3>
                         <div class="container-login100-form-btn p-t-25" ng-controller="viewAttController as viewAttCtrl">
                             <button id="addNewUser_Button" class="main-user-form-btn-secondary " ng-click="viewAttCtrl.selAttID = att.QueueAttendantID" ng-repeat="att in viewAttCtrl.availAtts">
-                                <span>{{att.FirstName + ' ' + att.MiddleName + ' ' + att.LastName}}</span> &nbsp;&nbsp;<span>ID: </span><span>{{att.QueueAttendantID}}</span>
+                                <span>{{att.FirstName + ' ' + att.MiddleName + ' ' + att.LastName}}</span> &nbsp;&nbsp;<span>ID: </span><span>{{att.QueueAttendantID}}</span>&nbsp;&nbsp;
                                 <span>Is Assigned: {{att.DesignatedLane.LaneName != null}}</span>
                             </button>
                         </div>
