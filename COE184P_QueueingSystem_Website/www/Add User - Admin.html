@@ -26,8 +26,8 @@
 <body>
 	<div class="limiter">
 		<div class="container-login100">
-			<div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30">
-				<form name="addUserForm" class="login100-form validate-form" ng-controller="addUserController as userCtrl">
+			<div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30" ng-controller="addUserController as userCtrl">
+				<form name="addUserForm" class="login100-form validate-form" ng-submit="userCtrl.addNewUser(userCtrl.user, userCtrl.confirmPassw)">
 					<span class="login100-form-title p-b-50">
 						Add New User
 					</span>
@@ -40,7 +40,7 @@
 						</div>
 
 					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="firstName" placeholder="First Name" ng-model="userCtrl.user.FirstName" required>
+						<input class="signup-text-line" type="text" name="firstName" placeholder="First Name*" ng-model="userCtrl.user.FirstName" ng-required="true">
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-16">
@@ -48,19 +48,19 @@
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="lastName" placeholder="Last Name" ng-model="userCtrl.user.LastName" required>
+						<input class="signup-text-line" type="text" name="lastName" placeholder="Last Name*" ng-model="userCtrl.user.LastName" ng-required="true">
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="email" placeholder="Email" ng-model="userCtrl.user.Email" required>
+						<input class="signup-text-line" type="text" name="email" placeholder="Email*" ng-model="userCtrl.user.Email" ng-required="true">
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="password" name="password" placeholder="Password" ng-model="userCtrl.user.Password" required>
+						<input class="signup-text-line" type="password" name="password" placeholder="Password*" ng-model="userCtrl.user.Password" ng-required="true">
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="password" name="confirmPassword" placeholder="Confirm Password" ng-model="userCtrl.confirmPassw" required>
+						<input class="signup-text-line" type="password" name="confirmPassword" placeholder="Confirm Password*" ng-model="userCtrl.confirmPassw" ng-required="true">
 					</div>
 					
 					<div class="wrap-input100 validate-input m-b-16">
@@ -68,13 +68,15 @@
 					</div>
 
 					<div class="container-login100-form-btn p-t-25">
-						<input type="submit" class="login100-form-btn" ng-click="userCtrl.addNewUser(userCtrl.user)" value="Add User">
-						<button class="login100-form-btn" ng-click="userCtrl.goBack()">
-							Back
-						</button>
+						<input type="submit" class="login100-form-btn" value="Add User" ng-disabled="addUserForm.$invalid">
 					</div>
 					
 				</form>
+				<div class="container-login100-form-btn p-t-25">
+					<button class="login100-form-btn" ng-click="userCtrl.goBack()">
+						Back
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>

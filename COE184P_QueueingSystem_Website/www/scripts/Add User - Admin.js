@@ -46,7 +46,7 @@ ngAddUserApp.factory("addUserService", ["httpConfigFactory", "$http", function (
     factory.addAttServiceName = "RegisterAsAttendant";
     factory.addAtt = function (user) {
         return $http.post(
-            SERVICE_ENDPOINTURL + factory.addUserServiceName,
+            SERVICE_ENDPOINTURL + factory.addAttServiceName,
             JSON.stringify({ "attendant": user }),
             httpConfig
         );
@@ -55,7 +55,7 @@ ngAddUserApp.factory("addUserService", ["httpConfigFactory", "$http", function (
     factory.addAdminServiceName = "RegisterAsAdmin";
     factory.addAdmin = function (user) {
         return $http.post(
-            SERVICE_ENDPOINTURL + factory.addUserServiceName,
+            SERVICE_ENDPOINTURL + factory.addAdminServiceName,
             JSON.stringify({ "admin": user }),
             httpConfig
         );
@@ -66,8 +66,8 @@ ngAddUserApp.factory("addUserService", ["httpConfigFactory", "$http", function (
 /*FACTORIES/SERVICES--------------------------------------------------------------------*/
 /*CONTROLLERS--------------------------------------------------------------------*/
 ngAddUserApp.controller("addUserController",
-    ["$window", "$location", "$q","userInfoService", "addUserService",
-    function ($window, $location, $q, userInfoService, addUserService) {
+    ["$scope", "$window", "$location", "$q","userInfoService", "addUserService",
+    function ($scope, $window, $location, $q, userInfoService, addUserService) {
         this.userTypeOpts = ["User", "Attendant", "Administrator"];
         this.selUserType = this.userTypeOpts[0];
         this.user = {};
@@ -107,10 +107,12 @@ ngAddUserApp.controller("addUserController",
             }
         };
 
-        this.addNewUser = function (newUser) {
-            if (!newUser.FirstName || !newUser.LastName) return;
-            if (!newUser.Email) return;
-            if (!newUser.Password && !newUser.Password != this.confirmPassw) return;
+        this.addNewUser = function (newUser, confirmPassw) {
+            
+            if (newUser.Password != confirmPassw) {
+                $window.alert("Passwords don't match.");
+                return;
+            }
 
             userInfoService.isExistingAccount(newUser.Email, newUser.Password)
                 .then((data) => {
@@ -128,6 +130,8 @@ ngAddUserApp.controller("addUserController",
 
                     if (success) {
                         $window.alert("Successfully added new user!");
+                        this.resetForm();
+
                     } else {
                         $window.alert("Failed to add user.");
                     }
@@ -135,6 +139,14 @@ ngAddUserApp.controller("addUserController",
                 })
                 .catch((reason) => { console.log("Caught: " + reason); });
 
+        };
+
+        this.resetForm = function() {
+            this.user = {};
+            this.confirmPassw = "";
+
+            $scope.addUserForm.$setPristine();
+            $scope.addUserForm.$setUntouched();
         };
 
         this.goBack = function () {

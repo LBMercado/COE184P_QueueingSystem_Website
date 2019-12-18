@@ -1,17 +1,33 @@
 ﻿var ngMainPageAdminApp = angular.module("MainPageAdminApp", ["MainPageUserApp"]);
 
-ngMainPageAdminApp.controller("lanesController", function ($scope, $window, $location, lanesService) {
-    setInterval(() => {
-        $scope.$apply(() => {
-            lanesService.getLanes()
-                .then((data, status) => {
-                    $scope.lanes = data.data["GetAllLanesResult"];
-                },
-                (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
-            $scope.userInfo["Email"] = sessionStorage.getItem("Email");
+ngMainPageAdminApp.controller("lanesController", function ($scope, $window, $location, lanesService, $interval, $timeout) {
 
-        });
+    $scope.refreshLaneView = function () {
+        lanesService.getLanes()
+            .then((data, status) => {
+                var laneList = data.data["GetAllLanesResult"];
+                //update only when the list changes
+                if(!angular.equals(laneList,$scope.lanes))
+                    $scope.lanes = laneList;
+            },
+            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
+    };
+
+    $timeout(() => {
+        $scope.userInfo["Email"] = sessionStorage.getItem("Email");
+        /*------------------------------------------------------------*/
+        lanesService.getLanes()
+            .then((data, status) => {
+                var laneList = data.data["GetAllLanesResult"];
+                $scope.lanes = laneList;    
+            },
+            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
+        /*------------------------------------------------------------*/
     }, 500);
+
+    $interval(() => {
+        $scope.refreshLaneView();
+    }, 1000);
 
     $scope.goToEditLane = function (laneNumber) {
         sessionStorage.setItem("LaneNumber", laneNumber);

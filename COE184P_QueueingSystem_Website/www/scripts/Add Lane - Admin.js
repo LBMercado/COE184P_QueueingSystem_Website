@@ -70,114 +70,165 @@ ngAddLaneApp.factory("laneInfoService", function ($http) {
     return laneInfoFactory;
 });
 
-ngAddLaneApp.controller("userInfoController", function ($scope) {
+ngAddLaneApp.controller("userInfoController", function ($scope, $timeout) {
     $scope.userInfo = {};
     $scope.userInfo["Email"] = 'USER_PLACEHOLDER_EMAIL';
 
-    setInterval(() => {
+    $timeout(() => {
         $scope.$apply(() => {
             $scope.userInfo["Email"] = sessionStorage.getItem("Email");
         });
     }, 500);
 });
 
-ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, laneInfoService, addLaneService) {
-    var resetAssignedAtt = function () {
-        $scope.assignedAtt = {
-            "AccountNumber": -1,
-            "ContactNumber": "",
-            "Email": "",
-            "FirstName": "",
-            "LastName": "",
-            "MiddleName": "",
-            "Password": "",
-            "DesignatedLane": {
-                "Capacity": 0,
-                "LaneID": 0,
-                "LaneName": null,
-                "LaneNumber": 0
-            },
-            "QueueAttendantID": ""
-        };
+ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $interval, $timeout, laneInfoService, addLaneService) {
+    var unassignedAtt = {
+        "AccountNumber": -1,
+        "ContactNumber": "",
+        "Email": "",
+        "FirstName": "",
+        "LastName": "",
+        "MiddleName": "",
+        "Password": "",
+        "DesignatedLane": {
+            "Capacity": 0,
+            "LaneID": 0,
+            "LaneName": null,
+            "LaneNumber": 0
+        },
+        "QueueAttendantID": ""
     };
-
-    $scope.newLane = {
+    var defaultLane = {
         "LaneName": "",
         "Capacity":10
     };
 
-    resetAssignedAtt();
-    
-    addLaneService.getLaneCount().then(
-        (data) => {
-            $scope.nextLaneNumber = data.data["GetLaneCountResult"] + 1;
-        }
-    );
-
+    $scope.newLane = defaultLane;
     $scope.attOptions = ['No Attendant'];
     $scope.selectedAttID = $scope.attOptions[0];
+    $scope.assignedAtt = unassignedAtt;
 
-    setInterval(() => {
-        $scope.$apply(() => {
-
-            var selectedAtt = $scope.selectedAttID;
-            if (!selectedAtt || selectedAtt == 'Attendant ID' || selectedAtt.length != 12) {
-                resetAssignedAtt();
-            }
-            /*-------------------------------------------------*/
-            laneInfoService.getAttendants()
-                .then((data, status) => {
-                    var attList = data.data["GetListOfAttendantsResult"];
-                    if (!attList.length)
-                        console.log("No attendants available.");
-                    else {
-                        $scope.availAttendants = attList;
-                        $scope.attOptions = ['No Attendant'];
-                        angular.forEach(attList, function (val, key) {
-                            $scope.attOptions.push(val["QueueAttendantID"]);
-                        });
-                    }
-                }, (status) => { console.log("ERROR: failed to retrieve list of attendants."); });
-            /*-------------------------------------------------*/
-            laneInfoService.getAttendant(selectedAtt)
-                .then((data, status) => {
-                    if (data.data["GetAttendantWithAttendantIDResult"] != null)
-                        $scope.assignedAtt = data.data["GetAttendantWithAttendantIDResult"];
-                    else
-                        resetAssignedAtt();
-                }, (status) => { console.log("ERROR: Unable to retrieve attendant info."); });
-        });
+    $timeout(() => {
+        var selectedAttID = $scope.selectedAttID;
+        /*-------------------------------------------------*/
+        laneInfoService.getAttendants()
+            .then((data, status) => {
+                var attList = data.data["GetListOfAttendantsResult"];
+                if (!attList.length)
+                    console.log("WARNING: No attendants available.");
+                else {
+                    $scope.availAttendants = attList;
+                    $scope.attOptions = ['No Attendant'];
+                    angular.forEach(attList, function (val, key) {
+                        $scope.attOptions.push(val["QueueAttendantID"]);
+                    });
+                }
+            }, (status) => { console.log("ERROR: failed to retrieve list of attendants."); });
+        /*-------------------------------------------------*/
+        addLaneService.getLaneCount().then(
+            (data) => {
+                var curLaneNumber = data.data["GetLaneCountResult"];
+                if (curLaneNumber != null)
+                    $scope.nextLaneNumber = curLaneNumber + 1;
+                else
+                    $scope.nextLaneNumber = -1;
+            });
+        /*-------------------------------------------------*/
     }, 500);
 
+    $interval(() => {
+        var selectedAttID = $scope.selectedAttID;
+        /*-------------------------------------------------*/
+        laneInfoService.getAttendants()
+            .then((data, status) => {
+                var attList = data.data["GetListOfAttendantsResult"];
+                if (!attList.length)
+                    console.log("WARNING: No attendants available.");
+                //update the model only if it is different from the current
+                else if (!angular.equals(attList,$scope.availAttendants)){
+                    $scope.availAttendants = attList;
+                    $scope.attOptions = ['No Attendant'];
+                    angular.forEach(attList, function (val, key) {
+                        $scope.attOptions.push(val["QueueAttendantID"]);
+                    });
+                }
+            }, (status) => { console.log("ERROR: failed to retrieve list of attendants."); });
+        /*-------------------------------------------------*/
+        if (selectedAttID == "No Attendant") {
+            //don't reassign if they are the same
+            if (!angular.equals($scope.assignedAtt, unassignedAtt))
+                $scope.assignedAtt = unassignedAtt;
+        } else {
+            laneInfoService.getAttendant(selectedAttID)
+            .then((data, status) => {
+                var att = data.data["GetAttendantWithAttendantIDResult"];
+                if (att == null)
+                    $scope.assignedAtt = unassignedAtt;
+                //update the model only if it is different from the current
+                else (!angular.equals(att,$scope.assignedAtt))
+                    $scope.assignedAtt = att;
+            }, (status) => { console.log("ERROR: Unable to retrieve attendant info."); });
+        }
+        /*-------------------------------------------------*/
+        addLaneService.getLaneCount().then(
+            (data) => {
+                //update the model only if it is different from the current
+                if ($scope.nextLaneNumber != data.data["GetLaneCountResult"] + 1)
+                    $scope.nextLaneNumber = data.data["GetLaneCountResult"] + 1;
+            });
+        /*-------------------------------------------------*/
+    }, 1000);
+
     $scope.addNewLane = function (newLane, assignedAttID) {
-        var isAssignedAtt = true;
-        if (!newLane.LaneName){
+        var laneToAdd = angular.copy(newLane);
+
+        laneToAdd.LaneNumber = $scope.nextLaneNumber - 1;
+        if (!laneToAdd.LaneName){
             $window.alert("A name is required for the lane.");
             return;
         }
-        if (assignedAttID == 'No Attendant' || assignedAttID.length != 12)
-            isAssignedAtt = false;
-        addLaneService.addNewLane(newLane)
-            .then((data) => {
-                if (data.data["AddNewLaneResult"]) {
-                    $scope.nextLaneNumber++;
-                    $scope.newLane.LaneName = "";
-                    $scope.selectedAttID = $scope.attOptions[0];
-                    if (isAssignedAtt)
-                        return addLaneService.setLaneAttendant($scope.nextLaneNumber - 1, assignedAttID);
-                    else {
+        if (assignedAttID == 'No Attendant' || assignedAttID.length != 12) {
+            addLaneService.addNewLane(laneToAdd)
+                .then((data) => {
+                    if (data.data["AddNewLaneResult"]) {
+                        $scope.newLane = defaultLane;
+                        $scope.selectedAttID = $scope.attOptions[0];
                         $window.alert("New lane added with unset attendant.");
-                        $q.reject('Lane attendant is not set.');
                     }
-                }
-            })
-            .then((data) => {
-                if (data.data["SetAttendantAtLaneResult"])
-                    $window.alert("New lane added with set attendant.");
-                else
-                    $.reject("failed to set lane attendant");
-            })
-            .catch((reason) => { console.log("WARNING: rejection/error caught. Reason: " + reason); });
+                }, (status) => { console.log("ERROR: Failed to add new lane with no attendant."); });
+        } else {
+            laneInfoService.getAttendant(assignedAttID)
+                .then((data) => {
+                    var selAtt = data.data["GetAttendantWithAttendantIDResult"];
+                    if (selAtt == null)
+                        $q.reject("AttendantID value does not match an attendant.");
+                    else if (angular.equals(unassignedAtt["DesignatedLane"], selAtt["DesignatedLane"]))
+                        return addLaneService.addNewLane(laneToAdd);
+                    else {
+                        $window.alert("The attendant selected is already assigned to a lane.");
+                        $q.reject("Cannot set an attendant that already has a lane.");
+                    }
+                })
+                .then((data) => {
+                    if (data.data["AddNewLaneResult"]) {
+                        $scope.newLane = defaultLane;
+                        $scope.selectedAttID = $scope.attOptions[0];
+                        return addLaneService.setLaneAttendant(laneToAdd.LaneNumber, assignedAttID);
+                    } else {
+                        $window.alert("Failed to add new lane.");
+                        $q.reject("Failed to add new lane.");
+                    }
+                })
+                .then((data) => {
+                    if (data.data["SetLaneActiveResult"])
+                        $window.alert("New lane added with set attendant.");
+                    else {
+                        $window.alert("Failed to set attendant.");
+                        $q.reject("Failed to set attendant to new lane.");
+                    }
+                })
+                .catch((reason) => { console.log("WARNING: rejection/error caught. Reason: " + reason); });
+        }
     };
 
     $scope.goToMainPage = function () {
