@@ -35,6 +35,13 @@ ngViewQueuesUserApp.factory("viewQueueService", function ($http) {
             SERVICE_ENDPOINTURL + "EnqueueUserTicket", JSON.stringify({"userID":userID, "laneNumber":laneNumber, "priorityNumber":priority}),httpConfig
         );
     }
+
+    viewQueueFactory.finishQueueTicket = function (ticketID) {
+        return $http.post(
+            SERVICE_ENDPOINTURL + "FinishQueueTicket", JSON.stringify({"queueTicketID":ticketID}),httpConfig
+        );
+    }
+
     viewQueueFactory.peek = function (laneNumber) {
         return $http.post(
             SERVICE_ENDPOINTURL + "PeekAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
@@ -52,6 +59,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
     $scope.userTicket = { 'QueueNumber': 'Not Queued' };
     $scope.userInfo = {"Email":""};
     $scope.userInfo.Email = sessionStorage.getItem("Email");
+    $scope.isQueued = false;
 
     $timeout(() => {
         var laneNumber = sessionStorage.getItem("LaneNumber");
@@ -80,8 +88,10 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                     $scope.userTicket = { "QueueNumber": 'Not Queued' };
                     $scope.queueNotif = "Tap on the button below to queue in.";
                 }
-                else if ($scope.userTicket.length >= 1)
+                else if ($scope.userTicket.length >= 1) {
                     $scope.userTicket = $scope.userTicket[0];
+                    $scope.isQueued = true;
+                }
             },
             (status) => { console.log("ERROR: Unable to retrieve user ticket information: error code " + status); });
         /*-----------------------------------------------------------------------*/
@@ -141,9 +151,12 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                     if (typeof $scope.userTicket === "undefined" || $scope.userTicket.length == 0) {
                         $scope.userTicket = { "QueueNumber": 'Not Queued' };
                         $scope.queueNotif = "Tap on the button below to queue in.";
+                        $scope.isQueued = false;
                     }
-                    else if ($scope.userTicket.length >= 1)
+                    else if ($scope.userTicket.length >= 1) {
                         $scope.userTicket = $scope.userTicket[0];
+                        $scope.isQueued = true;
+                    }
                 }                
             },
             (status) => { console.log("ERROR: Unable to retrieve user ticket information: error code " + status); });
@@ -196,9 +209,15 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 if (typeof $scope.userTicket === "undefined" || $scope.userTicket.length == 0) {
                     viewQueueService.enqueueUser(userID, laneNumber, priority).then(
                         (data, status) => {
-                            data.data["EnqueueUserTicketResult"] ?
+                            var success = data.data["EnqueueUserTicketResult"];
+                            if (success) {
                                 $window.alert("You are now in queue, please wait...")
-                                : $window.alert("It seems the system failed to queue you, please contact the administrator.");
+                                $scope.queueNotif = "Queue in progress...";
+                                $scope.isQueued = true;
+                            } else {
+                                $scope.queueNotif = "Something went wrong.";
+                                $window.alert("It seems the system failed to queue you, please contact the administrator.");
+                            }
                         },
                         (status) => { console.log("ERROR: unable to enqueue user to lane " + laneNumber); });
                 }
@@ -207,6 +226,29 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 }
             },
             (status) => { console.log("ERROR: Unable to retrieve user ticket information: error code " + status); });
+    };
+
+    $scope.cancelQueue = function () {
+        var acctNumber = sessionStorage.getItem("AccountNumber");
+        var userTick = $scope.userTicket;
+
+        if (userTick["QueueNumber"] == "Not Queued") {
+            $window.alert("You are not queued");
+            return;
+        }
+
+        viewQueueService.finishQueueTicket(userTick["QueueID"])
+            .then((data, status) => {
+                if (data.data["FinishQueueTicketResult"]) {
+                    $scope.queueNotif = "Tap on the button below to queue in.";
+                    $scope.userTicket = { "QueueNumber": 'Not Queued' };
+                    $scope.isQueued = false;
+                    $window.alert("Cancelled queue!");
+                } else {
+                    $window.alert("Failed to delete ticket, please contact administrator.");
+                }
+            },
+            (status) => { console.log("ERROR: Unable to finish ticket: error code " + status); });
     };
 
     $scope.goBackToMainPage = function () {

@@ -73,6 +73,11 @@ ngMainPageUserApp.controller("lanesController", function ($scope, $window, $inte
             });
     }, 500);
 
+    $scope.logout = function () {
+        $window.sessionStorage.clear();
+        $window.location.replace("Login.html");
+    };
+
     $scope.viewQueue = function (lane) {
         sessionStorage.setItem("LaneNumber", lane.LaneNumber);
 

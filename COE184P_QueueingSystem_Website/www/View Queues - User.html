@@ -45,12 +45,15 @@
 							<li class="queue__feature" id="Message" ng-model="queueNotif">{{queueNotif}}</li>
 						</ul>
 
-						<div class="container-login100-form-btn p-t-25">
-							<button id="QueueIn" class="main-user-form-btn-secondary " ng-click="enqueueUser()">
-								Queue In
-							</button>
-							<button class="queue__action" id="Back" ng-click="goBackToMainPage()">back</button>
-						</div>
+						<button id="QueueIn" ng-click="enqueueUser()" ng-disabled="isQueued">
+				Queue In
+			</button>
+			<button id="CancelQueue" ng-click="cancelQueue()" ng-disabled="!isQueued">
+				Cancel Queue
+			</button>
+			<button id="Back" ng-click="goBackToMainPage()">
+				Back
+			</button>
 					</div>
 				</div>
 			</div>

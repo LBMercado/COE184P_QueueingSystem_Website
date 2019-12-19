@@ -25,8 +25,10 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
                                     }
                                     else
                                         count++;
-                                    if (count == $scope.lanes.length)
+                                    if (count == $scope.lanes.length) {
                                         initModel();
+                                        $window.alert("You have no assigned lane, please contact an administrator.");
+                                    }
                                 },
                                 (status) => {
                                     console.log("Exited getLaneAttendant loop - " + status);
@@ -116,6 +118,11 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
         /*--------------------------------------------------------*/
     },
         500);
+
+    $scope.logout = function () {
+        $window.sessionStorage.clear();
+        $window.location.replace("Login.html");
+    };
 
     $scope.goToAttendantLane = function () {
         if ($scope.attendant.DesignatedLane.LaneNumber == -1) {

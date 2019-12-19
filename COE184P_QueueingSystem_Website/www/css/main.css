@@ -1,4 +1,24 @@
-
+ input.logoutbutton {
+	background-image: url('../images/logout.png');
+	background-size: cover;
+	background-color: transparent;
+	position: absolute;
+	top: 2px;
+	right: 10px;
+	cursor: pointer;
+	height: 40px; 
+	width: 40px;
+}
+button#QueueIn, button#Back, button#CancelQueue{
+	padding: 5px;
+	background-color: #EF7D46;
+	margin: 5px;
+	font-weight: bold;
+}
+button#QueueIn:hover, button#Back:hover, button#CancelQueue:hover{
+	color: #ef7d46;
+	background: #fff;
+}
 @font-face {
   font-family: Poppins-Regular;
   src: url('../fonts/poppins/Poppins-Regular.ttf'); 
@@ -267,6 +287,13 @@ iframe {
   background: #000; 
   border-radius: 3px;
   overflow: hidden;
+}
+.mainpagediv{
+  width: 450px;
+  background: #000; 
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
 }
 
 /*----------------------------------------------------------------*/

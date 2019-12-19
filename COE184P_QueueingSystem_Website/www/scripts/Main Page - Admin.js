@@ -1,6 +1,7 @@
 ﻿var ngMainPageAdminApp = angular.module("MainPageAdminApp", ["MainPageUserApp"]);
 
 ngMainPageAdminApp.controller("lanesController", function ($scope, $window, $location, lanesService, $interval, $timeout) {
+    $scope.userInfo = { 'Email': 'USER_PLACEHOLDER_EMAIL' };
 
     $scope.refreshLaneView = function () {
         lanesService.getLanes()
@@ -28,6 +29,11 @@ ngMainPageAdminApp.controller("lanesController", function ($scope, $window, $loc
     $interval(() => {
         $scope.refreshLaneView();
     }, 1000);
+
+    $scope.logout = function () {
+        $window.sessionStorage.clear();
+        $window.location.replace("Login.html");
+    };
 
     $scope.goToEditLane = function (laneNumber) {
         sessionStorage.setItem("LaneNumber", laneNumber);
