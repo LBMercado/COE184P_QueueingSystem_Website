@@ -1,4 +1,4 @@
-﻿const SERVERNAME = "localhost";
+﻿const SERVERNAME = "192.168.8.100";
 const WEBSITENAME = "COE184P_QueueingSystem";
 const WCFNAME = "QueueSystemService.svc"
 const SERVICE_ENDPOINTURL = "http://" + SERVERNAME + "/" + WEBSITENAME + "/" + WCFNAME + "/";

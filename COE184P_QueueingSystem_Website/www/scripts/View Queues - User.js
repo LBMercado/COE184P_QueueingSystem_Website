@@ -10,9 +10,14 @@ ngViewQueuesUserApp.factory("viewQueueService", function ($http) {
                 "access-control-allow-credentials": true
         }
     };
-    viewQueueFactory.getQueuedUserNumbers = function (laneNumber) {
+    viewQueueFactory.getQueuedAcctNumbers = function (laneNumber) {
         return $http.post(
             SERVICE_ENDPOINTURL + "GetListOfQueuedAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+        );
+    };
+    viewQueueFactory.getQueuedQueueNumbers = function (laneNumber) {
+        return $http.post(
+            SERVICE_ENDPOINTURL + "GetListOfQueueNumbersAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
         );
     };
     viewQueueFactory.getLane = function (laneNumber) {
@@ -65,9 +70,9 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         var laneNumber = sessionStorage.getItem("LaneNumber");
         var acctNumber = sessionStorage.getItem("AccountNumber");
         /*-----------------------------------------------------------------------*/
-        viewQueueService.getQueuedUserNumbers(laneNumber)
+        viewQueueService.getQueuedQueueNumbers(laneNumber)
             .then((data, status) => {
-                $scope.queueList = data.data["GetListOfQueuedAtLaneResult"];
+                $scope.queueList = data.data["GetListOfQueueNumbersAtLaneResult"];
                 if (typeof $scope.queueList === "undefined" || $scope.queueList.length == 0)
                     $scope.frontQueued = "Looks empty...";
                 else
@@ -78,18 +83,18 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         viewQueueService.getUserTickets(acctNumber)
             .then((data, status) => {
                 var userTicks = data.data["GetUserTicketsWithAccountNumberResult"];
-                $scope.userTicket = $filter("filter")(userTicks,
+                userTicks = $filter("filter")(userTicks,
                     (item) => {
                         return item.QueueLane.LaneNumber == laneNumber &&
                             item.Status == 0 ||
                             item.Status == 1
                     });
-                if (typeof $scope.userTicket === "undefined" || $scope.userTicket.length == 0) {
+                if (typeof userTicks === "undefined" || userTicks.length == 0) {
                     $scope.userTicket = { "QueueNumber": 'Not Queued' };
                     $scope.queueNotif = "Tap on the button below to queue in.";
                 }
                 else if ($scope.userTicket.length >= 1) {
-                    $scope.userTicket = $scope.userTicket[0];
+                    $scope.userTicket = userTicks[0];
                     $scope.isQueued = true;
                 }
             },
@@ -125,9 +130,9 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         var laneNumber = sessionStorage.getItem("LaneNumber");
         var acctNumber = sessionStorage.getItem("AccountNumber");
         /*-----------------------------------------------------------------------*/
-        viewQueueService.getQueuedUserNumbers(laneNumber)
+        viewQueueService.getQueuedQueueNumbers(laneNumber)
             .then((data, status) => {
-                var queued = data.data["GetListOfQueuedAtLaneResult"];
+                var queued = data.data["GetListOfQueueNumbersAtLaneResult"];
                 if (!angular.equals($scope.queueList, queued)) {
                     $scope.queueList = queued;
                     if (typeof $scope.queueList === "undefined" || $scope.queueList.length == 0)
@@ -147,17 +152,14 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                             item.Status == 0 ||
                             item.Status == 1
                     });
-                if (!angular.equals($scope.userTicket, userTicks[0])) {
-                    if (typeof $scope.userTicket === "undefined" || $scope.userTicket.length == 0) {
-                        $scope.userTicket = { "QueueNumber": 'Not Queued' };
-                        $scope.queueNotif = "Tap on the button below to queue in.";
-                        $scope.isQueued = false;
-                    }
-                    else if ($scope.userTicket.length >= 1) {
-                        $scope.userTicket = $scope.userTicket[0];
-                        $scope.isQueued = true;
-                    }
-                }                
+                if (typeof userTicks === "undefined" || userTicks.length == 0) {
+                    $scope.userTicket = { "QueueNumber": 'Not Queued' };
+                    $scope.queueNotif = "Tap on the button below to queue in.";
+                    $scope.isQueued = false;
+                } else {
+                    $scope.userTicket = userTicks[0];
+                    $scope.isQueued = true;
+                }
             },
             (status) => { console.log("ERROR: Unable to retrieve user ticket information: error code " + status); });
         /*-----------------------------------------------------------------------*/
@@ -197,35 +199,24 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         var userID = sessionStorage.getItem("UserID");
         var laneNumber = sessionStorage.getItem("LaneNumber");
         var priority = 0;
+        var userTick = $scope.userTicket;
 
-        viewQueueService.getUserTickets(accountNumber)
-            .then((data, status) => {
-                $scope.userTicket = $filter("filter")(data.data["GetUserTicketsWithAccountNumberResult"],
-                    (item) => {
-                        return item.QueueLane.LaneNumber == laneNumber &&
-                            item.Status == 0 ||
-                            item.Status == 1
-                    });
-                if (typeof $scope.userTicket === "undefined" || $scope.userTicket.length == 0) {
-                    viewQueueService.enqueueUser(userID, laneNumber, priority).then(
-                        (data, status) => {
-                            var success = data.data["EnqueueUserTicketResult"];
-                            if (success) {
-                                $window.alert("You are now in queue, please wait...")
-                                $scope.queueNotif = "Queue in progress...";
-                                $scope.isQueued = true;
-                            } else {
-                                $scope.queueNotif = "Something went wrong.";
-                                $window.alert("It seems the system failed to queue you, please contact the administrator.");
-                            }
-                        },
-                        (status) => { console.log("ERROR: unable to enqueue user to lane " + laneNumber); });
-                }
-                else {
-                    $window.alert("You are already queued.");
-                }
-            },
-            (status) => { console.log("ERROR: Unable to retrieve user ticket information: error code " + status); });
+        if (userTick["QueueNumber"] == "Not Queued") {
+            viewQueueService.enqueueUser(userID, laneNumber, priority)
+                .then((data, status) => {
+                    var success = data.data["EnqueueUserTicketResult"];
+                    if (success) {
+                        $window.alert("You are now in queue, please wait...")
+                        $scope.queueNotif = "Queue in progress...";
+                        $scope.isQueued = true;
+                    } else {
+                        $scope.queueNotif = "Something went wrong.";
+                        $window.alert("It seems the system failed to queue you, please contact the administrator.");
+                    }
+                },                        (status) => { console.log("ERROR: unable to enqueue user to lane " + laneNumber); });
+        } else {
+            $window.alert("You are already queued.");
+        }
     };
 
     $scope.cancelQueue = function () {

@@ -81,12 +81,13 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         /*-----------------------------------------------------------------*/
         viewLaneAttendantService.isEmptyQueue(laneNumber)
             .then((data, status) => {
-                var isEmpty = data.data["IsEmptyQueueAtLaneResult"];
+                $scope.isEmptyQueue = data.data["IsEmptyQueueAtLaneResult"];
 
-                if (!$scope.isEmptyQueue)
+                if (!$scope.isEmptyQueue) {
                     return viewLaneAttendantService.getQueuedUserNumbers(laneNumber);
-                else {
-                    $scope.frontQueued = "Looks empty..."
+                } else {
+                    $scope.frontQueued = "Looks empty...";
+                    $scope.isFrontOngoing = false;
                     $scope.queueList = {};
                     $q.reject("INFO: queue is empty.");
                 }
@@ -139,8 +140,10 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
 
         viewLaneAttendantService.finishQueueTicket($scope.frontTicket["QueueID"])
             .then((data, status) => {
-                if (data.data["FinishQueueTicketResult"])
+                if (data.data["FinishQueueTicketResult"]) {
                     $window.alert("Dequeued front ticket!");
+                    $scope.isFrontOngoing = false;
+                }
                 else
                     $window.alert("Failed to delete ticket, please contact administrator.");
             },
