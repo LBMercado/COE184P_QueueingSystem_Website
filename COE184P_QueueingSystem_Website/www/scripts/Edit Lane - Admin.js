@@ -128,6 +128,13 @@ ngEditLaneApp.factory("laneQueueService", ["httpConfigFactory", "$http", functio
         );
     };
 
+    factory.getQueueNumbersServiceName = "GetListOfQueueNumbersAtLane";
+    factory.getQueueNumbers = function (laneNumber) {
+        return $http.post(
+            SERVICE_ENDPOINTURL + factory.getQueueNumbersServiceName, JSON.stringify({"laneNumber":laneNumber}), httpConfig
+        );
+    };
+
     factory.resetQueueServiceName = "ResetQueueAtLane"
     factory.resetQueue = function (laneNumber) {
         return $http.post(
@@ -361,9 +368,9 @@ ngEditLaneApp.controller("queueListController", ["$scope", "laneQueueService", f
         $scope.$apply(() => {
             var laneNumber = sessionStorage.getItem("LaneNumber");
             /*---------------------------------------------------------------------------------*/
-            laneQueueService.getQueued(laneNumber)
+            laneQueueService.getQueueNumbers(laneNumber)
                 .then((data, status) => {
-                    this.queueList = data.data[laneQueueService.getQueuedServiceName + "Result"];
+                    this.queueList = data.data[laneQueueService.getQueueNumbersServiceName + "Result"];
                     if (typeof this.queueList === "undefined" || this.queueList.length == 0) {
                         this.frontQueued = "Looks empty..."
                     }

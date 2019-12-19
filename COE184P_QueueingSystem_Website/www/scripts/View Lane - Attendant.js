@@ -50,7 +50,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 $scope.isEmptyQueue = data.data["IsEmptyQueueAtLaneResult"];
                 
                 if (!$scope.isEmptyQueue)
-                    return viewLaneAttendantService.getQueuedUserNumbers(laneNumber);
+                    return viewLaneAttendantService.getQueuedQueueNumbers(laneNumber);
                 else {
                     $scope.frontQueued = "Looks empty..."
                     $q.reject("INFO: queue is empty.");
@@ -58,7 +58,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
             },
             (reason) => { console.log("queue update chain broken - " + reason); })
             .then((data) => {
-                $scope.queueList = data.data["GetListOfQueuedAtLaneResult"];
+                $scope.queueList = data.data["GetListOfQueueNumbersAtLaneResult"];
                 $scope.frontQueued = $scope.queueList[0];
             }, (reason) => { console.log("ERROR: failed to get list of queued."); });
         /*-----------------------------------------------------------------*/
@@ -84,7 +84,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 $scope.isEmptyQueue = data.data["IsEmptyQueueAtLaneResult"];
 
                 if (!$scope.isEmptyQueue) {
-                    return viewLaneAttendantService.getQueuedUserNumbers(laneNumber);
+                    return viewLaneAttendantService.getQueuedQueueNumbers(laneNumber);
                 } else {
                     $scope.frontQueued = "Looks empty...";
                     $scope.isFrontOngoing = false;
@@ -94,7 +94,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
             },
             (reason) => { console.log("queue update chain broken - " + reason); })
             .then((data) => {
-                var queueList = data.data["GetListOfQueuedAtLaneResult"];
+                var queueList = data.data["GetListOfQueueNumbersAtLaneResult"];
                 var queueFront = queueList[0];
 
                 //reflect changes on the model only if the queue list is different
