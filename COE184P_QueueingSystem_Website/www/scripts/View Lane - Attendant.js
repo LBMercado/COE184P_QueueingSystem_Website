@@ -6,32 +6,32 @@ ngViewLaneAttendantApp.factory("viewLaneAttendantService", function ($http, view
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
         }
     };
 
     viewLaneAttendantFactory.dequeue = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "DequeueAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "DequeueAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
 
     viewLaneAttendantFactory.peek = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "PeekAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "PeekAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
 
     viewLaneAttendantFactory.isEmptyQueue = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "IsEmptyQueueAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "IsEmptyQueueAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
 
     viewLaneAttendantFactory.finishQueueTicket = function (ticketID) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "FinishQueueTicket", JSON.stringify({"queueTicketID":ticketID}),httpConfig
+            SERVICE_ENDPOINTURL + "FinishQueueTicket", JSON.stringify({ "queueTicketID": ticketID }), httpConfig
         );
     }
 
@@ -41,18 +41,19 @@ ngViewLaneAttendantApp.factory("viewLaneAttendantService", function ($http, view
 ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $window, $location, $q, $timeout, $interval, viewLaneAttendantService) {
     $scope.userInfo = { "Email": "USER_PLACEHOLDER_EMAIL" };
     $scope.queueList = {};
-
+    $scope.notifText = "";
     $timeout(() => {
         var laneNumber = sessionStorage.getItem("LaneNumber");
         /*-----------------------------------------------------------------*/
         viewLaneAttendantService.isEmptyQueue(laneNumber)
             .then((data, status) => {
                 $scope.isEmptyQueue = data.data["IsEmptyQueueAtLaneResult"];
-                
+
                 if (!$scope.isEmptyQueue)
                     return viewLaneAttendantService.getQueuedQueueNumbers(laneNumber);
                 else {
                     $scope.frontQueued = "Looks empty..."
+                    $scope.notifText = "The queue is empty.";
                     $q.reject("INFO: queue is empty.");
                 }
             },
@@ -119,7 +120,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         viewLaneAttendantService.getLane(laneNumber)
             .then((data, status) => {
                 var lane = data.data["GetLaneResult"];
-                if (!angular.equals($scope.lane,lane))
+                if (!angular.equals($scope.lane, lane))
                     $scope.lane = lane;
             },
             (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
@@ -128,7 +129,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         viewLaneAttendantService.getAttendant(laneNumber)
             .then((data, status) => {
                 var att = data.data["GetAttendantAtLaneResult"];
-                if (!angular.equals($scope.attendant,att))
+                if (!angular.equals($scope.attendant, att))
                     $scope.attendant = att;
             },
             (status) => { console.log("ERROR: Unable to retrieve attendant information: error code " + status); });
@@ -137,15 +138,14 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         500);
 
     $scope.finishCurrentlyServing = function () {
-
         viewLaneAttendantService.finishQueueTicket($scope.frontTicket["QueueID"])
             .then((data, status) => {
                 if (data.data["FinishQueueTicketResult"]) {
-                    $window.alert("Dequeued front ticket!");
+                    $scope.notifText = "Dequeued front ticket!";
                     $scope.isFrontOngoing = false;
                 }
                 else
-                    $window.alert("Failed to delete ticket, please contact administrator.");
+                    $scope.notifText = "Failed to delete ticket, please contact administrator.";
             },
             (status) => { console.log("ERROR: Unable to finish ticket: error code " + status); });
     };
@@ -156,9 +156,9 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 var frontTick = data.data["DequeueAtLaneResult"];
 
                 if (typeof frontTick != null)
-                    $window.alert("Next queue set.");
+                    $scope.notifText = "Next queue set.";
                 else
-                    $window.alert("Failed to set next queue, please contact administrator.");
+                    $scope.notifText = "Failed to set next queue, please contact administrator.";
             },
             (status) => { console.log("ERROR: Unable to dequeue: error code " + status); });
     };

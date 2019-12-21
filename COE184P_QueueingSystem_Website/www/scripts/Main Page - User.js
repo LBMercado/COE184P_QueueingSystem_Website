@@ -1,14 +1,14 @@
 ﻿var ngMainPageUserApp = angular.module("MainPageUserApp", []);
 
-ngMainPageUserApp.factory("lanesService", function($http) {
+ngMainPageUserApp.factory("lanesService", function ($http) {
     var lanesFactory = {};
     var httpConfig = {
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
-            }
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
+        }
     };
     lanesFactory.getLanes = function () {
         return $http.get(
@@ -24,14 +24,14 @@ ngMainPageUserApp.factory("lanesService", function($http) {
 
     lanesFactory.isLaneActive = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "IsLaneActive", JSON.stringify({"laneNumber": laneNumber}), httpConfig
+            SERVICE_ENDPOINTURL + "IsLaneActive", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
 
     return lanesFactory;
 });
 
-ngMainPageUserApp.controller("lanesController", function ($scope, $window, $interval, $timeout, lanesService) {
+ngMainPageUserApp.controller("lanesController", function ($scope, $window, $interval, $timeout, $q, lanesService) {
     $scope.userInfo = { 'Email': 'USER_PLACEHOLDER_EMAIL' };
     $scope.lanes = {};
 
@@ -42,34 +42,36 @@ ngMainPageUserApp.controller("lanesController", function ($scope, $window, $inte
             .then((data, status) => {
                 $scope.lanes = data.data["GetAllLanesResult"];
                 angular.forEach($scope.lanes, (val, key) => {
-                    lanesService.isLaneActive(val["LaneNumber"]).then(
-                        (data, status) => {
+                    lanesService.isLaneActive(val["LaneNumber"])
+                        .then((data, status) => {
                             $scope.lanes[key]["IsActive"] = data.data["IsLaneActiveResult"];
-                        },
-                        (status) => { console.log("ERROR: Unable to retrieve lane activity information."); }
-                    );
-            },
-            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
-        });
-    }, 300);
+                        }, (status) => { console.log("ERROR: Unable to retrieve lane activity information."); }
+                        );
+                }, (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
+            });
+    }, 250);
 
     $interval(() => {
         lanesService.getLanes()
             .then((data, status) => {
                 var lanes = data.data["GetAllLanesResult"];
-                //update model only if it is different
-                if (!angular.equals(lanes, $scope.lanes)) {
-                    $scope.lanes = data.data["GetAllLanesResult"];
-                    angular.forEach($scope.lanes, (val, key) => {
-                        lanesService.isLaneActive(val["LaneNumber"]).then(
-                            (data, status) => {
-                                $scope.lanes[key]["IsActive"] = data.data["IsLaneActiveResult"];
-                            },
-                            (status) => { console.log("ERROR: Unable to retrieve lane activity information."); }
-                        );
-                    },
-            (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); })
-                };
+                var lanesWithStatus = [];
+                lanes.reduce(function (p, lane) {
+                    return p.then(function () {
+                        return lanesService.isLaneActive(lane["LaneNumber"])
+                            .then((response) => {
+                                lane["IsActive"] = response.data["IsLaneActiveResult"];
+                                lanesWithStatus.push(lane);
+                                return $q.resolve(lanesWithStatus);
+                            });
+                    });
+                }, $q.when(true))
+                    .then((lanes) => {
+                        //update model only if it is different
+                        if (!angular.equals(lanes, $scope.lanes)) {
+                            $scope.lanes = lanes;
+                        }
+                    });
             });
     }, 500);
 
@@ -80,7 +82,6 @@ ngMainPageUserApp.controller("lanesController", function ($scope, $window, $inte
 
     $scope.viewQueue = function (lane) {
         sessionStorage.setItem("LaneNumber", lane.LaneNumber);
-
         lanesService.getLaneAttendant(lane.LaneNumber)
             .then((data, status) => {
                 if (angular.equals(data.data["GetAttendantAtLaneResult"], null))
@@ -89,8 +90,6 @@ ngMainPageUserApp.controller("lanesController", function ($scope, $window, $inte
                     sessionStorage.setItem("AttendantID", data.data["GetAttendantAtLaneResult"]["QueueAttendantID"]);
                     $window.location.replace("View Queues - User.html");
                 }
-
-            },
-            (status) => { console.log("ERROR: failed to retrieve attendant at lane " + lane.LaneNumber) });
+            }, (status) => { console.log("ERROR: failed to retrieve attendant at lane " + lane.LaneNumber) });
     };
 });

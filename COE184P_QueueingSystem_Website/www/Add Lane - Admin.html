@@ -36,8 +36,9 @@
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Add New Lane</h3>
 
-
                         <div class="container-login100-form-btn p-t-25" ng-controller="laneInfoController">
+                            <p class="text1"
+                                   ng-bind="notifText"></p>
                             <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
                                 <span>Lane #{{nextLaneNumber}}: {{newLane.LaneName}}</span> &nbsp;&nbsp;
                             </button>

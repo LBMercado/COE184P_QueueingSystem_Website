@@ -6,50 +6,50 @@ ngViewQueuesUserApp.factory("viewQueueService", function ($http) {
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
         }
     };
     viewQueueFactory.getQueuedAcctNumbers = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetListOfQueuedAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "GetListOfQueuedAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
     viewQueueFactory.getQueuedQueueNumbers = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetListOfQueueNumbersAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "GetListOfQueueNumbersAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
     viewQueueFactory.getLane = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "GetLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
     viewQueueFactory.getAttendant = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetAttendantAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "GetAttendantAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
     viewQueueFactory.getUserTickets = function (accountNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetUserTicketsWithAccountNumber", JSON.stringify({"accountNumber":accountNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "GetUserTicketsWithAccountNumber", JSON.stringify({ "accountNumber": accountNumber }), httpConfig
         );
     };
     viewQueueFactory.enqueueUser = function (userID, laneNumber, priority) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "EnqueueUserTicket", JSON.stringify({"userID":userID, "laneNumber":laneNumber, "priorityNumber":priority}),httpConfig
+            SERVICE_ENDPOINTURL + "EnqueueUserTicket", JSON.stringify({ "userID": userID, "laneNumber": laneNumber, "priorityNumber": priority }), httpConfig
         );
     }
 
     viewQueueFactory.finishQueueTicket = function (ticketID) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "FinishQueueTicket", JSON.stringify({"queueTicketID":ticketID}),httpConfig
+            SERVICE_ENDPOINTURL + "FinishQueueTicket", JSON.stringify({ "queueTicketID": ticketID }), httpConfig
         );
     }
 
     viewQueueFactory.peek = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "PeekAtLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "PeekAtLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
 
@@ -62,9 +62,10 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
     $scope.lane = { 'LaneName': 'LANE_NAME_UNSET' };
     $scope.attendant = { 'FirstName': 'ATTENDANT_NAME_UNSET', 'MiddleName': '', 'LastName': '' };
     $scope.userTicket = { 'QueueNumber': 'Not Queued' };
-    $scope.userInfo = {"Email":""};
+    $scope.userInfo = { "Email": "" };
     $scope.userInfo.Email = sessionStorage.getItem("Email");
     $scope.isQueued = false;
+    $scope.notifText = "";
 
     $timeout(() => {
         var laneNumber = sessionStorage.getItem("LaneNumber");
@@ -175,7 +176,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         viewQueueService.getAttendant(laneNumber)
             .then((data, status) => {
                 var att = data.data["GetAttendantAtLaneResult"];
-                if (!angular.equals(att,$scope.attendant))
+                if (!angular.equals(att, $scope.attendant))
                     $scope.attendant = att;
             },
             (status) => { console.log("ERROR: Unable to retrieve attendant information: error code " + status); });
@@ -206,16 +207,16 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                 .then((data, status) => {
                     var success = data.data["EnqueueUserTicketResult"];
                     if (success) {
-                        $window.alert("You are now in queue, please wait...")
+                        $scope.notifText = "You are now in queue, please wait...";
                         $scope.queueNotif = "Queue in progress...";
                         $scope.isQueued = true;
                     } else {
                         $scope.queueNotif = "Something went wrong.";
-                        $window.alert("It seems the system failed to queue you, please contact the administrator.");
+                        $scope.notifText = "It seems the system failed to queue you, please contact the administrator.";
                     }
-                },                        (status) => { console.log("ERROR: unable to enqueue user to lane " + laneNumber); });
+                }, (status) => { console.log("ERROR: unable to enqueue user to lane " + laneNumber); });
         } else {
-            $window.alert("You are already queued.");
+            $scope.notifText = "You are already queued.";
         }
     };
 
@@ -224,7 +225,7 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
         var userTick = $scope.userTicket;
 
         if (userTick["QueueNumber"] == "Not Queued") {
-            $window.alert("You are not queued");
+            $scope.notifText = "You are not queued";
             return;
         }
 
@@ -234,9 +235,9 @@ ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $wi
                     $scope.queueNotif = "Tap on the button below to queue in.";
                     $scope.userTicket = { "QueueNumber": 'Not Queued' };
                     $scope.isQueued = false;
-                    $window.alert("Cancelled queue!");
+                    $scope.notifText = "Cancelled queue!";
                 } else {
-                    $window.alert("Failed to delete ticket, please contact administrator.");
+                    $scope.notifText = "Failed to delete ticket, please contact administrator.";
                 }
             },
             (status) => { console.log("ERROR: Unable to finish ticket: error code " + status); });

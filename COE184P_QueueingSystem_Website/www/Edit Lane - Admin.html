@@ -34,10 +34,10 @@
                 <div class="queue--yama">
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Edit Lane</h3>
-
                         <div class="flex">
-
                             <div ng-controller="laneEditNameController as nameCtrl">
+                                <p class="text1"
+                                   ng-bind="nameCtrl.notifText"></p>
                                 <div class="input-group">
                                     <input class="reset-password-line" name="previousPassword" placeholder="Lane Name" ng-model="nameCtrl.thisLane.LaneName">
                                 </div>
@@ -45,7 +45,6 @@
                                     <button type="button" class="queue__action2" ng-click="nameCtrl.editLaneName(nameCtrl.thisLane)">Change Lane Name</button>
                                 </div>
                             </div>
-
                         </div>
 
                         <div class="flex">
@@ -59,9 +58,7 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
 
                         <h3 class="queue__title" id="Department">Queue</h3>
                         <div ng-controller="assignedAttController as assignedAttCtrl">
@@ -86,7 +83,6 @@
                             <span class="queue__period" id="QueueList" ng-repeat="queue in queueCtrl.queueList.slice(1,queueList.length)">{{queue}} &nbsp;</span>
                         </div>
                         <button class="queue__action" id="Reset_Queue" ng-controller="resetQueueController as rstQueueCtrl" ng-click="rstQueueCtrl.resetQueueForLane(rstQueueCtrl.thisLane.LaneNumber)">reset queue</button>
-
 
                         <h3 class="queue__title" id="Department">Available Attendants</h3>
                         <div class="container-login100-form-btn p-t-25" ng-controller="viewAttController as viewAttCtrl">
@@ -113,6 +109,5 @@
     <!--===============================================================================================-->
     <script src="scripts/dependencies.js"></script>
     <script src="scripts/Edit Lane - Admin.js"></script>
-
 </body>
 </html>

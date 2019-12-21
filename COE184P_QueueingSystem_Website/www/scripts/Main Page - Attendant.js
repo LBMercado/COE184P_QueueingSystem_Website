@@ -1,7 +1,7 @@
 ﻿var ngMainPageAttendantApp = angular.module("MainPageAttendantApp", ["MainPageUserApp"]);
 
 ngMainPageAttendantApp.controller("lanesController", function ($scope, $location, $window, $timeout, $interval, $q, lanesService) {
-    
+    initModel();
     $timeout(() => {
         var count = 0;
         $scope.userInfo["Email"] = sessionStorage.getItem("Email");
@@ -27,7 +27,8 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
                                         count++;
                                     if (count == $scope.lanes.length) {
                                         initModel();
-                                        $window.alert("You have no assigned lane, please contact an administrator.");
+                                        $scope.notifText = "You have no assigned lane, contact an administrator.";
+                                        $scope.isNotAssigned = true;
                                     }
                                 },
                                 (status) => {
@@ -35,7 +36,6 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
                                 });
                         },
                         (status) => { console.log("ERROR: Unable to retrieve lane activity information."); });
-
                 },
                     (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
             });
@@ -43,77 +43,53 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
     }, 250);
 
     $interval(() => {
-        var count = 0;
         /*--------------------------------------------------------*/
         lanesService.getLanes()
             .then((data, status) => {
                 var lanes = data.data["GetAllLanesResult"];
-                //reflect changes in model only when it is different
-                if (!angular.equals(lanes, $scope.lanes)) {
-                    $scope.lanes = lanes;
-                    angular.forEach($scope.lanes, (val, key) => {
-                        lanesService.isLaneActive(val["LaneNumber"])
-                            .then((data, status) => {
-                                $scope.lanes[key]["IsActive"] = data.data["IsLaneActiveResult"];
-                                lanesService.getLaneAttendant(val["LaneNumber"])
-                                    .then((data, status) => {
-                                        var attendant = data.data["GetAttendantAtLaneResult"];
-                                        var thisAttendantID = sessionStorage.getItem("QueueAttendantID");
-                                        if (attendant != null && attendant.QueueAttendantID == thisAttendantID) {
-                                            $scope.isNotAssigned = false;
-                                            $scope.attendant = attendant;
+                var lanesWithStatus = [];
+                lanes.reduce(function (p, lane) {
+                    return p.then(function () {
+                        return lanesService.isLaneActive(lane["LaneNumber"])
+                            .then((response) => {
+                                lane["IsActive"] = response.data["IsLaneActiveResult"];
+                                lanesWithStatus.push(lane);
+                                return $q.resolve(lanesWithStatus);
+                            });
+                    });
+                }, $q.when(true))
+                    .then((lanes) => {
+                        //update model only if it is different
+                        if (!angular.equals(lanes, $scope.lanes)) {
+                            $scope.lanes = angular.copy(lanes);
+                        }
+                        var thisAttendantID = sessionStorage.getItem("QueueAttendantID");
+                        lanes.reduce(function (p, lane) {
+                            return p.then(function () {
+                                return lanesService.getLaneAttendant(lane["LaneNumber"])
+                                    .then((response) => {
+                                        var att = response.data["GetAttendantAtLaneResult"];
+                                        if (att != null && att.QueueAttendantID == thisAttendantID) {
                                             //break out
-                                            $q.reject("Exited loop - found the assigned lane for the attendant.");
+                                            return $q.reject(att);
                                         }
-                                        else
-                                            count++;
-                                        if (count == $scope.lanes.length)
-                                            initModel();
-                                    },
-                                    (status) => {
-                                        console.log("Exited getLaneAttendant loop - " + status);
-                                    });
-                            },
-                            (status) => { console.log("ERROR: Unable to retrieve lane activity information."); });
-
-                    },
-                        (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
-                } else {
-                    //still need to check if the attendant's lane has changed
-                    angular.forEach($scope.lanes, (val, key) => {
-                        lanesService.isLaneActive(val["LaneNumber"])
-                            .then((data, status) => {
-                                var isActiveResult = data.data["IsLaneActiveResult"];
-                                //update model only if it has changed
-                                if ($scope.lanes[key]["IsActive"] != isActiveResult)
-                                    $scope.lanes[key]["IsActive"] = isActiveResult;
-                                lanesService.getLaneAttendant(val["LaneNumber"])
-                                    .then((data, status) => {
-                                        var attendant = data.data["GetAttendantAtLaneResult"];
-                                        var thisAttendantID = sessionStorage.getItem("QueueAttendantID");
-                                        if (attendant != null && attendant.QueueAttendantID == thisAttendantID) {
-                                            //update model only if it has changed
-                                            if (!angular.equals($scope.attendant, attendant)) {
-                                                $scope.isNotAssigned = false;
-                                                $scope.attendant = attendant;
-                                            }
-                                            //break out
-                                            $q.reject("Exited loop - found the assigned lane for the attendant.");
+                                        else {
+                                            return $q.resolve(null);
                                         }
-                                        else
-                                            count++;
-                                        if (count == $scope.lanes.length)
-                                            initModel();
-                                    },
-                                    (status) => {
-                                        console.log("Exited getLaneAttendant loop - " + status);
                                     });
-                            },
-                            (status) => { console.log("ERROR: Unable to retrieve lane activity information."); });
-
-                    },
-                        (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
-                }
+                            });
+                        }, $q.when(true))
+                            .then((att) => {
+                            })
+                            .catch((att) => {
+                                if (att != null) {
+                                    $scope.isNotAssigned = false;
+                                    $scope.attendant = att;
+                                } else {
+                                    initModel();
+                                }
+                            });
+                    });
             });
         /*--------------------------------------------------------*/
     },
@@ -126,7 +102,8 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
 
     $scope.goToAttendantLane = function () {
         if ($scope.attendant.DesignatedLane.LaneNumber == -1) {
-            $window.alert("You have no assigned lane, contact an administrator.");
+            $scope.notifText = "You have no assigned lane, contact an administrator.";
+            $scope.isNotAssigned = true;
             return;
         }
         sessionStorage.setItem("LaneNumber", $scope.attendant.DesignatedLane.LaneNumber);
@@ -135,6 +112,7 @@ ngMainPageAttendantApp.controller("lanesController", function ($scope, $location
 
     function initModel() {
         $scope.attendant = { 'DesignatedLane': { 'LaneNumber': '-1' } };
+        $scope.notifText = "You have no assigned lane, contact an administrator.";
         $scope.isNotAssigned = true;
     };
 });

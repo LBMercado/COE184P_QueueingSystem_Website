@@ -40,6 +40,10 @@
                             {{frontQueued}}
                             <span class="queue__period" id="QueueList" ng-repeat="queue in queueList.slice(1,queueList.length)">{{queue}} &nbsp;</span>
                         </div>
+                        <div class="text-center w-full p-t-115">
+                            <p class="txt1"
+                               ng-bind="notifText"></p>
+                        </div>
                         <button class="queue__action" id="Back" ng-disabled="!isFrontOngoing" ng-click="finishCurrentlyServing()">Finish Currently Serving</button>
 
                         <button class="queue__action" id="Back" ng-disabled="isEmptyQueue" ng-click="getNextServing()">Get Next in Queue</button>
@@ -61,6 +65,5 @@
         <script src="scripts/dependencies.js"></script>
         <script src="scripts/View Queues - User.js"></script>
         <script src="scripts/View Lane - Attendant.js"></script>
-
 </body>
 </html>

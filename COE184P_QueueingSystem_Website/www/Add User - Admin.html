@@ -1,96 +1,118 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="AddUserApp">
 <head>
-	<!--<title>Login V11</title>
-	<meta charset="UTF-8">-->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<!--===============================================================================================-->
+    <!--<title>Login V11</title>
+    <meta charset="UTF-8">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!--===============================================================================================-->
 </head>
 <body>
-	<div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30" ng-controller="addUserController as userCtrl">
-				<form name="addUserForm" class="login100-form validate-form" ng-submit="userCtrl.addNewUser(userCtrl.user, userCtrl.confirmPassw)">
-					<span class="login100-form-title p-b-50">
-						Add New User
-					</span>
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30" ng-controller="addUserController as userCtrl">
+                <form name="addUserForm" class="login100-form validate-form" ng-submit="userCtrl.addNewUser(userCtrl.user, userCtrl.confirmPassw)">
+                    <span class="login100-form-title p-b-50">
+                        Add New User
+                    </span>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<label>User Type: <br /></label>
-						<select ng-model="userCtrl.selUserType"
-								ng-options="opt for opt in userCtrl.userTypeOpts">
-						</select>
-						</div>
+                    <div class="wrap-input100 validate-input m-b-16">
+                        <label>User Type: <br /></label>
+                        <select ng-model="userCtrl.selUserType"
+                                ng-options="opt for opt in userCtrl.userTypeOpts"
+                                ng-required="true"></select>
+                    </div>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="firstName" placeholder="First Name*" ng-model="userCtrl.user.FirstName" ng-required="true">
-					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="First Name is Required"
+                         ng-class="{'alert-validate':(addUserForm.firstName.$dirty && addUserForm.firstName.$invalid && !userCtrl.fNameFocus || ( addUserForm.$submitted && addUserForm.firstName.$invalid ) )}">
+                        <input class="signup-text-line" type="text" name="firstName" placeholder="First Name*"
+                               ng-model="userCtrl.user.FirstName" ng-required="true"
+                               ng-focus="userCtrl.fNameFocus=true;" ng-blur="userCtrl.fNameFocus=false">
+                    </div>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="middleName" placeholder="Middle Name" ng-model="userCtrl.user.MiddleName">
-					</div>
+                    <div class="wrap-input100 validate-input m-b-16">
+                        <input class="signup-text-line" type="text" name="middleName" placeholder="Middle Name"
+                               ng-model="userCtrl.user.MiddleName">
+                    </div>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="lastName" placeholder="Last Name*" ng-model="userCtrl.user.LastName" ng-required="true">
-					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Last Name is Required"
+                         ng-class="{'alert-validate':(addUserForm.lastName.$dirty && addUserForm.lastName.$invalid && !userCtrl.lNameFocus || ( addUserForm.$submitted && addUserForm.lastName.$invalid ) )}">
+                        <input class="signup-text-line" type="text" name="lastName" placeholder="Last Name*"
+                               ng-model="userCtrl.user.LastName" ng-required="true"
+                               ng-focus="userCtrl.lNameFocus=true;" ng-blur="userCtrl.lNameFocus=false">
+                    </div>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="text" name="email" placeholder="Email*" ng-model="userCtrl.user.Email" ng-required="true">
-					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Valid email is required: ex@abc.xyz"
+                         ng-class="{'alert-validate':(addUserForm.email.$dirty && addUserForm.email.$invalid && !userCtrl.emailFocus || ( addUserForm.$submitted && addUserForm.email.$invalid ) )}">
+                        <input class="signup-text-line" type="email" name="email" placeholder="Email*"
+                               ng-model="userCtrl.user.Email" ng-required="true"
+                               ng-focus="userCtrl.emailFocus=true;" ng-blur="userCtrl.emailFocus=false">
+                    </div>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="password" name="password" placeholder="Password*" ng-model="userCtrl.user.Password" ng-required="true">
-					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Password is required."
+                         ng-class="{'alert-validate':(addUserForm.password.$dirty && addUserForm.password.$invalid && !userCtrl.passwFocus || ( addUserForm.$submitted && addUserForm.password.$invalid ) )}">
+                        <input class="signup-text-line" type="password" name="password" placeholder="Password*"
+                               ng-model="userCtrl.user.Password" ng-required="true"
+                               ng-focus="userCtrl.passwFocus=true;" ng-blur="userCtrl.passwFocus=false">
+                    </div>
 
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" type="password" name="confirmPassword" placeholder="Confirm Password*" ng-model="userCtrl.confirmPassw" ng-required="true">
-					</div>
-					
-					<div class="wrap-input100 validate-input m-b-16">
-						<input class="signup-text-line" name="contactNumber" placeholder="Contact Number" ng-model="userCtrl.user.ContactNumber">
-					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Confirm Password does not match."
+                         ng-class="{'alert-validate':(addUserForm.confirmPassword.$dirty && userCtrl.user.Password != userCtrl.confirmPassw && !userCtrl.confPasswFocus || ( addUserForm.$submitted && userCtrl.user.Password != userCtrl.confirmPassw ) )}">
+                        <input class="signup-text-line" type="password" name="confirmPassword" placeholder="Confirm Password*"
+                               ng-model="userCtrl.confirmPassw" ng-required="true"
+                               ng-focus="confPasswFocus=true;" ng-blur="confPasswFocus=false">
+                    </div>
 
-					<div class="container-login100-form-btn p-t-25">
-						<input type="submit" class="login100-form-btn" value="Add User" ng-disabled="addUserForm.$invalid">
-					</div>
-					
-				</form>
-				<div class="container-login100-form-btn p-t-25">
-					<button class="login100-form-btn" ng-click="userCtrl.goBack()">
-						Back
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!--===============================================================================================-->
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-	<script src="lib/angular.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="scripts/dependencies.js"></script>
-	<script src="scripts/Add User - Admin.js"></script>
+                    <div class="wrap-input100 validate-input m-b-16">
+                        <input class="signup-text-line" name="contactNumber" placeholder="Contact Number"
+                               ng-model="userCtrl.user.ContactNumber">
+                    </div>
 
+                    <div class="text-center w-full p-t-115">
+                        <p class="error-text error-elem success-elem" ng-show="userCtrl.isExistingLogin || userCtrl.isSuccessfulSignUp"
+                           ng-class="{'error-text':userCtrl.isExistingLogin, 'success-text':userCtrl.isSuccessfulSignUp}"
+                           ng-bind="userCtrl.notifText"></p>
+                    </div>
+
+                    <div class="container-login100-form-btn p-t-25">
+                        <input type="submit" class="login100-form-btn" value="Add User"
+                               ng-click="userCtrl.addNewUser(userCtrl.user, userCtrl.confirmPassw)">
+                    </div>
+                </form>
+                <div class="container-login100-form-btn p-t-25">
+                    <button class="login100-form-btn" ng-click="userCtrl.goBack()">
+                        Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--===============================================================================================-->
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="lib/angular.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="scripts/dependencies.js"></script>
+    <script src="scripts/Add User - Admin.js"></script>
 </body>
 </html>

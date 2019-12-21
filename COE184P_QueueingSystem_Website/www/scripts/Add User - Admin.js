@@ -6,8 +6,8 @@ ngAddUserApp.factory("httpConfigFactory", [function () {
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
         }
     };
 
@@ -66,92 +66,85 @@ ngAddUserApp.factory("addUserService", ["httpConfigFactory", "$http", function (
 /*FACTORIES/SERVICES--------------------------------------------------------------------*/
 /*CONTROLLERS--------------------------------------------------------------------*/
 ngAddUserApp.controller("addUserController",
-    ["$scope", "$window", "$location", "$q","userInfoService", "addUserService",
-    function ($scope, $window, $location, $q, userInfoService, addUserService) {
-        this.userTypeOpts = ["User", "Attendant", "Administrator"];
-        this.selUserType = this.userTypeOpts[0];
-        this.user = {};
-
-        function determineUserAndAdd(user, userType) {
-            switch (userType) {
-                case "User":
-                    return addUserService.addUser(user);
-                    break;
-                case "Attendant":
-                    return addUserService.addAtt(user);
-                    break;
-                case "Administrator":
-                    return addUserService.addAdmin(user);
-                    break;
-                default:
-                    console.log("ERROR: Cannot identify user type.");
-
-            }
-        };
-
-        function determineUserAddSuccess(data, userType) {
-            switch (userType) {
-                case "User":
-                    return data.data[addUserService.addUserServiceName + "Result"];
-                    break;
-                case "Attendant":
-                    return data.data[addUserService.addAttServiceName + "Result"];
-                    break;
-                case "Administrator":
-                    return data.data[addUserService.addAdminServiceName + "Result"];
-                    break;
-                default:
-                    console.log("ERROR: Cannot identify user type.");
-                    return false;
-
-            }
-        };
-
-        this.addNewUser = function (newUser, confirmPassw) {
-            
-            if (newUser.Password != confirmPassw) {
-                $window.alert("Passwords don't match.");
-                return;
-            }
-
-            userInfoService.isExistingAccount(newUser.Email, newUser.Password)
-                .then((data) => {
-                    var exists = data.data[userInfoService.isExistingAccountServiceName + "Result"];
-
-                    if (exists) {
-                        $window.alert("The email is already used.");
-                        $q.reject("Failed to add: Email is already used.");;
-                    } else {
-                        return determineUserAndAdd(newUser, this.selUserType);
-                    }
-                })
-                .then((data) => {
-                    var success = determineUserAddSuccess(data, this.selUserType);
-
-                    if (success) {
-                        $window.alert("Successfully added new user!");
-                        this.resetForm();
-
-                    } else {
-                        $window.alert("Failed to add user.");
-                    }
-                    return success;
-                })
-                .catch((reason) => { console.log("Caught: " + reason); });
-
-        };
-
-        this.resetForm = function() {
+    ["$scope", "$window", "$location", "$q", "$timeout", "userInfoService", "addUserService",
+        function ($scope, $window, $location, $q, $timeout, userInfoService, addUserService) {
+            this.userTypeOpts = ["User", "Attendant", "Administrator"];
+            this.selUserType = this.userTypeOpts[0];
             this.user = {};
-            this.confirmPassw = "";
+            this.notifText = "";
+            this.isExistingLogin = false;
+            this.isSuccessfulSignUp = false;
 
-            $scope.addUserForm.$setPristine();
-            $scope.addUserForm.$setUntouched();
-        };
+            function determineUserAndAdd(user, userType) {
+                switch (userType) {
+                    case "User":
+                        return addUserService.addUser(user);
+                        break;
+                    case "Attendant":
+                        return addUserService.addAtt(user);
+                        break;
+                    case "Administrator":
+                        return addUserService.addAdmin(user);
+                        break;
+                    default:
+                        console.log("ERROR: Cannot identify user type.");
+                }
+            };
 
-        this.goBack = function () {
-            $window.location.replace("Main Page - Admin.html");
-        };
+            function determineUserAddSuccess(data, userType) {
+                switch (userType) {
+                    case "User":
+                        return data.data[addUserService.addUserServiceName + "Result"];
+                        break;
+                    case "Attendant":
+                        return data.data[addUserService.addAttServiceName + "Result"];
+                        break;
+                    case "Administrator":
+                        return data.data[addUserService.addAdminServiceName + "Result"];
+                        break;
+                    default:
+                        console.log("ERROR: Cannot identify user type.");
+                        return false;
+                }
+            };
 
-}]);
+            this.addNewUser = function (newUser, confirmPassw) {
+                if (typeof newUser === "undefined" || newUser == null ||
+                    !newUser.Email || !newUser.Password ||
+                    newUser.Password != confirmPassw)
+                    return;
+
+                determineUserAndAdd(newUser, this.selUserType)
+                    .then((response) => {
+                        var success = determineUserAddSuccess(response, this.selUserType);
+
+                        if (success) {
+                            this.notifText = "Successfully added new user!";
+                            this.isExistingLogin = false;
+                            this.isSuccessfulSignUp = true;
+                            $timeout(() => {
+                                this.resetForm();
+                            }, 2000);
+                        } else {
+                            this.notifText = "The email is already used."
+                            this.isExistingLogin = true;
+                            this.isSuccessfulSignUp = false;
+                        }
+                    });
+            };
+
+            this.resetForm = function () {
+                this.user = {};
+                this.confirmPassw = "";
+                this.notifText = "";
+                this.isExistingLogin = false;
+                this.isSuccessfulSignUp = false;
+                $scope.addUserForm.$setPristine();
+                $scope.addUserForm.$setUntouched();
+            };
+
+            this.goBack = function () {
+                $window.location.replace("Main Page - Admin.html");
+            };
+        }]);
 /*CONTROLLERS--------------------------------------------------------------------*/

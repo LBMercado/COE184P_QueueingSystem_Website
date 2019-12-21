@@ -1,75 +1,77 @@
-﻿	<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" ng-app="ViewQueuesUserApp">
 <head>
-	<!--<title>Login V11</title>
-	<meta charset="UTF-8">-->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<!--===============================================================================================-->
+    <!--<title>Login V11</title>
+    <meta charset="UTF-8">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!--===============================================================================================-->
 </head>
 <body>
-	<div class="limiter">
-		<div class="container-main-user">
-			<div class="wrap-main-user p-l-15 p-r-20 p-t-12 p-b-12" ng-controller="queueController">
-				<label for="User">User: &nbsp </label>
-				<label id="User">
-					<a class="txt hov1" href="#" ng-model="userInfo" ng-init="userInfo = { 'Email':'USER_PLACEHOLDER_EMAIL' }">{{userInfo.Email}}</a>
-				</label>
-				<div class="queue--yama">
-					<div class="queue__item" ng-model="queueList">
-						<h3 class="queue__title" id="Department" ng-model="lane">{{lane.LaneName}}</h3>
-						<p class="queue__sentence">Currently Serving</p>
-						<div class="queue__price" id="CurrentlyServing">
-							{{frontQueued}}
-							<span class="queue__period" id="QueueList" ng-repeat="queue in queueList.slice(1,queueList.length)">{{queue}} &nbsp;</span>
-						</div>
-						<ul class="queue__feature-list">
-							<li class="queue__feature">You will be served by: <span id="served_name" ng-model="attendant">{{attendant.FirstName + ' ' + attendant.MiddleName  + ' ' + attendant.LastName}}</span></li>
-							<li class="queue__feature">Your Queue Number: <span id="queue_number" ng-model="userTicket">{{userTicket.QueueNumber}}</span></li>
-							<li class="queue__feature" id="Message" ng-model="queueNotif">{{queueNotif}}</li>
-						</ul>
-
-						<button id="QueueIn" ng-click="enqueueUser()" ng-disabled="isQueued">
-				Queue In
-			</button>
-			<button id="CancelQueue" ng-click="cancelQueue()" ng-disabled="!isQueued">
-				Cancel Queue
-			</button>
-			<button id="Back" ng-click="goBackToMainPage()">
-				Back
-			</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!--===============================================================================================-->
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-	<script src="lib/angular.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="scripts/dependencies.js"></script>
-	<script src="scripts/View Queues - User.js"></script>
-
+    <div class="limiter">
+        <div class="container-main-user">
+            <div class="wrap-main-user p-l-15 p-r-20 p-t-12 p-b-12" ng-controller="queueController">
+                <label for="User">User: &nbsp </label>
+                <label id="User">
+                    <a class="txt hov1" href="#" ng-model="userInfo" ng-init="userInfo = { 'Email':'USER_PLACEHOLDER_EMAIL' }">{{userInfo.Email}}</a>
+                </label>
+                <div class="queue--yama">
+                    <div class="queue__item" ng-model="queueList">
+                        <h3 class="queue__title" id="Department" ng-model="lane">{{lane.LaneName}}</h3>
+                        <p class="queue__sentence">Currently Serving</p>
+                        <div class="queue__price" id="CurrentlyServing">
+                            {{frontQueued}}
+                            <span class="queue__period" id="QueueList" ng-repeat="queue in queueList.slice(1,queueList.length)">{{queue}} &nbsp;</span>
+                        </div>
+                        <ul class="queue__feature-list">
+                            <li class="queue__feature">You will be served by: <span id="served_name" ng-model="attendant">{{attendant.FirstName + ' ' + attendant.MiddleName  + ' ' + attendant.LastName}}</span></li>
+                            <li class="queue__feature">Your Queue Number: <span id="queue_number" ng-model="userTicket">{{userTicket.QueueNumber}}</span></li>
+                            <li class="queue__feature" id="Message" ng-model="queueNotif">{{queueNotif}}</li>
+                        </ul>
+                        <div class="text-center w-full p-t-115">
+                            <p class="txt1"
+                               ng-bind="notifText"></p>
+                        </div>
+                        <button id="QueueIn" ng-click="enqueueUser()" ng-disabled="isQueued">
+                            Queue In
+                        </button>
+                        <button id="CancelQueue" ng-click="cancelQueue()" ng-disabled="!isQueued">
+                            Cancel Queue
+                        </button>
+                        <button id="Back" ng-click="goBackToMainPage()">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--===============================================================================================-->
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="lib/angular.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="scripts/dependencies.js"></script>
+    <script src="scripts/View Queues - User.js"></script>
 </body>
 </html>

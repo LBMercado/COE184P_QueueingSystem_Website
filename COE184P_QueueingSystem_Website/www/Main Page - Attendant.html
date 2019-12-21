@@ -38,6 +38,11 @@
                         <h3 class="queue__title" id="Department">Attendant</h3>
                         <p class="queue__sentence">Main Page</p>
                         <button class="queue__action" id="CustomerService" ng-model="attendant" ng-disabled="attendant.DesignatedLane.LaneNumber != lane.LaneNumber" ng-repeat="lane in lanes" ng-click="goToAttendantLane()"> Lane {{lane.LaneNumber}}<br />{{lane.LaneName}}</button>
+                        <div class="text-center w-full p-t-115">
+                            <p class="error-elem error-text"
+                               ng-show="isNotAssigned"
+                               ng-bind="notifText"></p>
+                        </div>
                         <div class="container-login100-form-btn p-t-25">
                             <button id="ViewMyInfo_Button" class="main-user-form-btn-secondary " ng-disabled="isNotAssigned" ng-init="isNotAssigned = true" ng-click="goToAttendantLane()">
                                 Go to my Lane
@@ -60,6 +65,5 @@
     <script src="scripts/dependencies.js"></script>
     <script src="scripts/Main Page - User.js"></script>
     <script src="scripts/Main Page - Attendant.js"></script>
-
 </body>
 </html>

@@ -27,6 +27,7 @@ ngResetPasswordApp.factory("resetPasswordService", function ($http, viewInfoServ
 });
 
 ngResetPasswordApp.controller("resetPasswordController", function ($scope, $location, $window, resetPasswordService) {
+    $scope.notifText = "";
     setInterval(() => {
         $scope.$apply(() => {
             var accountNumber = sessionStorage["AccountNumber"];
@@ -73,19 +74,19 @@ ngResetPasswordApp.controller("resetPasswordController", function ($scope, $loca
         var email = $scope.userInfo["Email"];
 
         if (!oldPassw || !newPassw) {
-            $window.alert("Please fill out all the fields.");
+            $scope.notifText = "Please fill out all the fields.";
             return;
         }
 
         resetPasswordService.resetPassword(email, oldPassw, newPassw)
             .then((data, status) => {
                 if (data.data["ResetPasswordResult"]) {
-                    $window.alert("Successfully changed password!");
+                    $scope.notifText = "Successfully changed password!";
                     $scope.oldPassw = '';
                     $scope.newPassw = '';
                 }
                 else {
-                    $window.alert("Incorrect old password given.");
+                    $scope.notifText = "Incorrect old password given.";
                 }
             }, (status) => { console.log("ERROR: Unable to reset password.") });
     };

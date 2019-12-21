@@ -112,6 +112,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
     $scope.attOptions = ['No Attendant'];
     $scope.selectedAttID = $scope.attOptions[0];
     $scope.assignedAtt = unassignedAtt;
+    $scope.notifText = "";
 
     $timeout(() => {
         var selectedAttID = $scope.selectedAttID;
@@ -200,7 +201,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                     if (data.data["AddNewLaneResult"]) {
                         $scope.newLane = defaultLane;
                         $scope.selectedAttID = $scope.attOptions[0];
-                        $window.alert("New lane added with unset attendant.");
+                        $scope.notifText = "New lane added with unset attendant.";
                     }
                 }, (status) => { console.log("ERROR: Failed to add new lane with no attendant."); });
         } else {
@@ -212,7 +213,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                     else if (angular.equals(unassignedAtt["DesignatedLane"], selAtt["DesignatedLane"]))
                         return addLaneService.addNewLane(laneToAdd);
                     else {
-                        $window.alert("The attendant selected is already assigned to a lane.");
+                        $scope.notifText = "The attendant selected is already assigned to a lane.";
                         $q.reject("Cannot set an attendant that already has a lane.");
                     }
                 })
@@ -220,7 +221,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                     if (data.data["AddNewLaneResult"]) {
                         return addLaneService.setLaneAttendant(laneToAdd.LaneNumber, assignedAttID, tolerance);
                     } else {
-                        $window.alert("Failed to add new lane.");
+                        $scope.notifText = "Failed to add new lane.";
                         $q.reject("Failed to add new lane.");
                     }
                 })
@@ -228,9 +229,10 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                     if (data.data["SetLaneActiveResult"]) {
                         $scope.newLane = defaultLane;
                         $scope.selectedAttID = $scope.attOptions[0];
-                        $window.alert("New lane added with set attendant.");
+                        $scope.notifText = "New lane added with set attendant.";
+
                     } else {
-                        $window.alert("ERROR: Failed to set lane active.");
+                        $scope.notifText = "ERROR: Failed to set lane active.";
                         $q.reject("Failed to set attendant to new lane.");
                     }
                 })
