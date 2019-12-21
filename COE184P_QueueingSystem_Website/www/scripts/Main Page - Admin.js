@@ -8,7 +8,7 @@ ngMainPageAdminApp.controller("lanesController", function ($scope, $window, $loc
             .then((data, status) => {
                 var laneList = data.data["GetAllLanesResult"];
                 //update only when the list changes
-                if(!angular.equals(laneList,$scope.lanes))
+                if (!angular.equals(laneList, $scope.lanes))
                     $scope.lanes = laneList;
             },
             (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
@@ -20,7 +20,7 @@ ngMainPageAdminApp.controller("lanesController", function ($scope, $window, $loc
         lanesService.getLanes()
             .then((data, status) => {
                 var laneList = data.data["GetAllLanesResult"];
-                $scope.lanes = laneList;    
+                $scope.lanes = laneList;
             },
             (status) => { console.log("ERROR: Unable to retrieve lane information: error code " + status); });
         /*------------------------------------------------------------*/

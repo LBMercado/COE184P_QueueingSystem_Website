@@ -7,9 +7,9 @@ ngAddLaneApp.factory("addLaneService", function ($http) {
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
-            }
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
+        }
     };
 
     var convertDateToTimeSpan = function (date) {
@@ -24,15 +24,15 @@ ngAddLaneApp.factory("addLaneService", function ($http) {
 
     addLaneFactory.addNewLane = function (newLane) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "AddNewLane", JSON.stringify({"lane":newLane}), httpConfig
+            SERVICE_ENDPOINTURL + "AddNewLane", JSON.stringify({ "lane": newLane }), httpConfig
         );
     };
-    
+
     addLaneFactory.setLaneAttendant = function (laneNumber, attID, tolerance) {
         return $http.post(
             SERVICE_ENDPOINTURL + "SetLaneActive",
             JSON.stringify({
-                "laneNumber":laneNumber,
+                "laneNumber": laneNumber,
                 "attendantID": attID,
                 "maxTolerance": convertDateToTimeSpan(tolerance)
             }), httpConfig
@@ -49,26 +49,26 @@ ngAddLaneApp.factory("laneInfoService", function ($http) {
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
-            }
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
+        }
     };
 
     laneInfoFactory.getLaneInfo = function (laneNumber) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetLane", JSON.stringify({"laneNumber":laneNumber}),httpConfig
+            SERVICE_ENDPOINTURL + "GetLane", JSON.stringify({ "laneNumber": laneNumber }), httpConfig
         );
     };
 
     laneInfoFactory.getAttendant = function (attID) {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetAttendantWithAttendantID", JSON.stringify({"attendantID":attID}), httpConfig
+            SERVICE_ENDPOINTURL + "GetAttendantWithAttendantID", JSON.stringify({ "attendantID": attID }), httpConfig
         );
     }
 
     laneInfoFactory.getAttendants = function () {
         return $http.post(
-            SERVICE_ENDPOINTURL + "GetListOfAttendants", "{}",httpConfig
+            SERVICE_ENDPOINTURL + "GetListOfAttendants", "{}", httpConfig
         );
     };
 
@@ -105,7 +105,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
     };
     var defaultLane = {
         "LaneName": "",
-        "Capacity":10
+        "Capacity": 10
     };
 
     $scope.newLane = defaultLane;
@@ -151,7 +151,7 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                 if (!attList.length)
                     console.log("WARNING: No attendants available.");
                 //update the model only if it is different from the current
-                else if (!angular.equals(attList,$scope.availAttendants)){
+                else if (!angular.equals(attList, $scope.availAttendants)) {
                     $scope.availAttendants = attList;
                     $scope.attOptions = ['No Attendant'];
                     angular.forEach(attList, function (val, key) {
@@ -166,14 +166,14 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                 $scope.assignedAtt = unassignedAtt;
         } else {
             laneInfoService.getAttendant(selectedAttID)
-            .then((data, status) => {
-                var att = data.data["GetAttendantWithAttendantIDResult"];
-                if (att == null)
-                    $scope.assignedAtt = unassignedAtt;
-                //update the model only if it is different from the current
-                else (!angular.equals(att,$scope.assignedAtt))
+                .then((data, status) => {
+                    var att = data.data["GetAttendantWithAttendantIDResult"];
+                    if (att == null)
+                        $scope.assignedAtt = unassignedAtt;
+                    //update the model only if it is different from the current
+                    else (!angular.equals(att, $scope.assignedAtt))
                     $scope.assignedAtt = att;
-            }, (status) => { console.log("ERROR: Unable to retrieve attendant info."); });
+                }, (status) => { console.log("ERROR: Unable to retrieve attendant info."); });
         }
         /*-------------------------------------------------*/
         addLaneService.getLaneCount().then(
@@ -188,10 +188,10 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
     $scope.addNewLane = function (newLane, assignedAttID) {
         var laneToAdd = angular.copy(newLane);
         var tolerance = new Date();
-        tolerance.setHours(23,59,59); //default tolerance of ~one day
+        tolerance.setHours(23, 59, 59); //default tolerance of ~one day
 
         laneToAdd.LaneNumber = $scope.nextLaneNumber;
-        if (!laneToAdd.LaneName){
+        if (!laneToAdd.LaneName) {
             $window.alert("A name is required for the lane.");
             return;
         }
@@ -230,7 +230,6 @@ ngAddLaneApp.controller("laneInfoController", function ($scope, $window, $q, $in
                         $scope.newLane = defaultLane;
                         $scope.selectedAttID = $scope.attOptions[0];
                         $scope.notifText = "New lane added with set attendant.";
-
                     } else {
                         $scope.notifText = "ERROR: Failed to set lane active.";
                         $q.reject("Failed to set attendant to new lane.");

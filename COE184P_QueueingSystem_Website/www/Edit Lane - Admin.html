@@ -31,12 +31,14 @@
                 <label id="User" ng-controller="userInfoController as userCtrl">
                     <a class="txt hov1" href="View Info - All.html">{{userCtrl.userInfo.Email}}</a>
                 </label>
+                <a href="Main Page - Admin.html">
+                    <input type="button" class="backbutton" id="Back">
+                </a>
                 <div class="queue--yama">
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Edit Lane</h3>
-                        <div class="flex">
-                            <div ng-controller="laneEditNameController as nameCtrl">
-                                <p class="text1"
+                        <div class="container-login100-form-btn" ng-controller="laneEditNameController as nameCtrl">
+                            <p class="text1"
                                    ng-bind="nameCtrl.notifText"></p>
                                 <div class="input-group">
                                     <input class="reset-password-line" name="previousPassword" placeholder="Lane Name" ng-model="nameCtrl.thisLane.LaneName">
@@ -44,7 +46,6 @@
                                 <div>
                                     <button type="button" class="queue__action2" ng-click="nameCtrl.editLaneName(nameCtrl.thisLane)">Change Lane Name</button>
                                 </div>
-                            </div>
                         </div>
 
                         <div class="flex">

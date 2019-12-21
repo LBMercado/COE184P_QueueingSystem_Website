@@ -7,9 +7,9 @@ ngResetPasswordApp.factory("resetPasswordService", function ($http, viewInfoServ
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
-            }
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
+        }
     };
 
     resetPasswordService.resetPassword = function (email, oldPassword, newPassword) {
@@ -34,7 +34,6 @@ ngResetPasswordApp.controller("resetPasswordController", function ($scope, $loca
             resetPasswordService.isAdmin(accountNumber)
                 .then((data, status) => {
                     if (data.data["IsAdminResult"]) {
-                        
                         resetPasswordService.getAdmin(accountNumber)
                             .then((data, status) => {
                                 $scope.userInfo = data.data["GetAdminAccountWithAccountNumberResult"];
@@ -45,7 +44,6 @@ ngResetPasswordApp.controller("resetPasswordController", function ($scope, $loca
                 (status) => { console.log("ERROR: Unable to retrieve user type as admin."); })
                 .then((data, status) => {
                     if (data.data["IsQueueAttendantResult"]) {
-                       
                         resetPasswordService.getAttendant(accountNumber)
                             .then((data, status) => {
                                 $scope.userInfo = data.data["GetAttendantWithAccountNumberResult"];
@@ -55,17 +53,12 @@ ngResetPasswordApp.controller("resetPasswordController", function ($scope, $loca
                 }, (status) => { console.log("ERROR: Unable to retrieve user type as attendant."); })
                 .then((data, status) => {
                     if (data.data["IsUserResult"]) {
-                        
                         resetPasswordService.getUser(accountNumber)
                             .then((data, status) => {
                                 $scope.userInfo = data.data["GetUserAccountWithAccountNumberResult"];
                             }, (status) => { console.log("ERROR: Unable to retrieve user account."); });;
                     }
                 }, (status) => { console.log("ERROR: Unable to retrieve user type as user."); });
-
-            
-
-
         });
     },
         500);

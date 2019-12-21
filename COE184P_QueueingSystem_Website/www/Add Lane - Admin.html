@@ -22,69 +22,46 @@
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!--===============================================================================================-->
-
 </head>
 <body>
     <div class="limiter">
         <div class="container-main-user">
-            <div class="wrap-main-user p-l-15 p-r-20 p-t-12 p-b-12">
+            <div class="mainpagediv p-l-15 p-r-15 p-t-12 p-b-12">
                 <label for="User">&nbspADMIN:  &nbsp </label>
                 <label id="User" ng-controller="userInfoController">
                     <a class="txt hov1" href="View Info - All.html">{{userInfo.Email}}</a>
                 </label>
+                <a href="Main Page - Admin.html">
+                    <input type="button" class="backbutton" id="Back">
+                </a>
                 <div class="queue--yama">
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Add New Lane</h3>
 
-                        <div class="container-login100-form-btn p-t-25" ng-controller="laneInfoController">
+                        <div class="container-login100-form-btn" ng-controller="laneInfoController">
                             <p class="text1"
                                    ng-bind="notifText"></p>
-                            <button id="addNewUser_Button" class="main-user-form-btn-secondary ">
-                                <span>Lane #{{nextLaneNumber}}: {{newLane.LaneName}}</span> &nbsp;&nbsp;
-                            </button>
-                            <button id="addNewUser_Button" class="main-user-form-btn-secondary" ng-hide="assignedAtt.AccountNumber == -1">
-                                <span>{{assignedAtt.FirstName + ' ' + assignedAtt.MiddleName + ' ' + assignedAtt.LastName}}</span>
-                                &nbsp;&nbsp;
-                                <span>ID: </span><span>{{assignedAtt.QueueAttendantID}}</span>
-                                &nbsp;&nbsp;
-                                <span>Is Assigned: {{assignedAtt.DesignatedLane.LaneName != null}}</span>
-                            </button>
-                            <div>
-                                <div class="flex">
-
-                                    <div>
-                                        <div class="input-group">
-                                            <input class="reset-password-line" name="previousPassword" placeholder="Lane Name" ng-model="newLane.LaneName">
-                                        </div>
-                                    </div>
-
+                            <div class="addlanedisplayborder">
+                                <div class="addlanedisplay">
+                                    <span class="addlanespan">Lane #{{nextLaneNumber}}: {{newLane.LaneName}}</span>
                                 </div>
-
-                                <div class="flex">
-
-                                    <div>
-                                        <div class="select-edit">
-                                            <select ng-model="selectedAttID"
-                                                    ng-options="attOpt for attOpt in attOptions"></select>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="p-b-20">
+                                <div class="input-group m-b-15 m-t-15">
+                                    <input class="addlaneinput" name="laneName" placeholder="Lane Name" ng-model="newLane.LaneName">
                                 </div>
+                                <select class="addlaneinput m-b-15" ng-model="selectedAttID"
+                                        ng-options="attOpt for attOpt in attOptions"></select>
                                 <button class="queue__action" id="FinalizeAddLane" ng-click="addNewLane(newLane, selectedAttID)">Finalize and Add Lane</button>
-
-
-
-
-                                <h3 class="queue__title" id="Department">Available Attendants</h3>
-                                <div class="container-login100-form-btn p-t-25">
-                                    <button id="addNewUser_Button" class="main-user-form-btn-secondary " ng-click="selectedAttID = att.QueueAttendantID" ng-repeat="att in availAttendants">
-                                        <span>{{att.FirstName + ' ' + att.MiddleName + ' ' + att.LastName}}</span>
-                                        &nbsp;&nbsp;
-                                        <span>ID: </span><span>{{att.QueueAttendantID}}</span>
-                                        &nbsp;&nbsp;
-                                        <span>Is Assigned: {{att.DesignatedLane.LaneName != null}}</span>
-                                    </button>
+                            </div>
+                            <h3 class="header2" id="Department">Available Attendants</h3>
+                            <div class="container-login100-form-btn">
+                                <div class="addlaneattendlist" ng-click="selectedAttID = att.QueueAttendantID" ng-repeat="att in availAttendants">
+                                    <div class="left p-l-5">{{att.FirstName + ' ' + att.MiddleName + ' ' + att.LastName}}</div>
+                                    <div class="center">ID: <span>{{att.QueueAttendantID}}</span></div>
+                                    <div class="right p-r-5">Is Assigned: {{att.DesignatedLane.LaneName != null}}</div>
                                 </div>
-
+                            </div>
 
                                 <button class="queue__action" id="Back" ng-click="goToMainPage()">back</button>
                             </div>
@@ -105,6 +82,5 @@
     <!--===============================================================================================-->
     <script src="scripts/dependencies.js"></script>
     <script src="scripts/Add Lane - Admin.js"></script>
-
 </body>
 </html>

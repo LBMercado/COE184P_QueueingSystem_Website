@@ -25,21 +25,21 @@ body {
     padding:0px;
     text-transform:uppercase;
     width:100%;
-	
+
     background-color:#32383d;
     font-family: 'RobotoRegular', 'Droid Sans', 'Segoe UI', Segoe, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, Geneva, sans-serif;
     font-size:12px;
 }
 
 .app {
-    background: url(../images/cordova.png) no-repeat center top; 
-    position: absolute;             
+    background: url(../images/cordova.png) no-repeat center top;
+    position: absolute;
     left: 50%;
     top: 50%;
-    height: 50px;                  
-    width: 225px;                   
+    height: 50px;
+    width: 225px;
     text-align: center;
-    padding: 180px 0px 0px 0px;     
+    padding: 180px 0px 0px 0px;
     margin: -115px 0px 0px -112px;
 }
 
@@ -84,13 +84,13 @@ h1 {
     50% { opacity: 0.4; }
     to { opacity: 1.0; }
 }
- 
+
 @-webkit-keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
     to { opacity: 1.0; }
 }
- 
+
 .blink {
     animation:fade 3000ms infinite;
     -webkit-animation:fade 3000ms infinite;
