@@ -74,6 +74,7 @@ ngAddUserApp.controller("addUserController",
             this.notifText = "";
             this.isExistingLogin = false;
             this.isSuccessfulSignUp = false;
+            this.isAddClicked = false;
 
             function determineUserAndAdd(user, userType) {
                 switch (userType) {
@@ -113,7 +114,8 @@ ngAddUserApp.controller("addUserController",
                     !newUser.Email || !newUser.Password ||
                     newUser.Password != confirmPassw)
                     return;
-
+                if (this.isAddClicked) return; //prevent repetitive clicking
+                this.isAddClicked = true;
                 determineUserAndAdd(newUser, this.selUserType)
                     .then((response) => {
                         var success = determineUserAddSuccess(response, this.selUserType);
@@ -124,11 +126,13 @@ ngAddUserApp.controller("addUserController",
                             this.isSuccessfulSignUp = true;
                             $timeout(() => {
                                 this.resetForm();
+                                this.isAddClicked = false;
                             }, 2000);
                         } else {
                             this.notifText = "The email is already used."
                             this.isExistingLogin = true;
                             this.isSuccessfulSignUp = false;
+                            this.isAddClicked = false;
                         }
                     });
             };
