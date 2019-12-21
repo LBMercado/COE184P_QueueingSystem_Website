@@ -7,7 +7,7 @@
   <vs:toolsetVersion>6.3.1</vs:toolsetVersion>
   <engine name="android" spec="5.2.1" />
   <engine name="ios" spec="4.2.0" />
-  <engine name="windows" spec="4.4.2" />
+  <engine name="windows" spec="~4.4.2" />
   <content src="Login.html" />
   <access origin="*" />
   <preference name="SplashScreen" value="screen" />

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="LoginApp">
 <head>
     <!--<title>Login V11</title>
     <meta charset="UTF-8">-->
@@ -27,43 +27,65 @@
 
     <div class="limiter">
         <div class="container-login100">
-            <div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30">
-                <form class="login100-form validate-form">
+            <div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30" ng-controller="SignUpController as ctrl">
+                <form class="login100-form validate-form" name="signUpForm">
                     <span class="login100-form-title p-b-50">
                         Sign up
                     </span>
-                    <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="text" id="firstName" placeholder="First Name">
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="First Name is Required"
+                         ng-class="{'alert-validate':(signUpForm.fName.$dirty && signUpForm.fName.$invalid && !fNameFocus || ( signUpForm.$submitted && signUpForm.fName.$invalid ) )}">
+                        <input class="signup-text-line" type="text" id="firstName" name="fName" placeholder="First Name"
+                               ng-model="ctrl.user.FirstName" ng-required="true"
+                               ng-focus="fNameFocus=true;" ng-blur="fNameFocus=false">
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="text" id="middleName" placeholder="Middle Name">
+                        <input class="signup-text-line" type="text" id="middleName" name="mName" placeholder="Middle Name"
+                               ng-model="ctrl.user.MiddleName">
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Last Name is Required"
+                         ng-class="{'alert-validate':(signUpForm.lName.$dirty && signUpForm.lName.$invalid && !lNameFocus || ( signUpForm.$submitted && signUpForm.lName.$invalid ) )}">
+                        <input class="signup-text-line" type="text" id="lastName" name="lName" placeholder="Last Name"
+                               ng-model="ctrl.user.LastName" ng-required="true"
+                               ng-focus="lNameFocus=true;" ng-blur="lNameFocus=false">
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Valid email is required: ex@abc.xyz"
+                         ng-class="{'alert-validate':(signUpForm.email.$dirty && signUpForm.email.$invalid && !emailFocus || ( signUpForm.$submitted && signUpForm.email.$invalid ) )}">
+                        <input class="signup-text-line" type="email" id="email" name="email" placeholder="Email"
+                               ng-model="ctrl.user.Email" ng-required="true"
+                               ng-focus="emailFocus=true;" ng-blur="emailFocus=false">
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Password is required."
+                         ng-class="{'alert-validate':(signUpForm.password.$dirty && signUpForm.password.$invalid && !passwFocus || ( signUpForm.$submitted && signUpForm.password.$invalid ) )}">
+                        <input class="signup-text-line" type="password" id="password" name="password" placeholder="Password"
+                               ng-model="ctrl.user.Password" ng-required="true"
+                               ng-focus="passwFocus=true;" ng-blur="passwFocus=false">
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Confirm Password does not match."
+                         ng-class="{'alert-validate':(signUpForm.confPassword.$dirty && ctrl.user.Password != ctrl.confirmPassword && !confPasswFocus || ( signUpForm.$submitted && ctrl.user.Password != ctrl.confirmPassword ) )}">
+                        <input class="signup-text-line" type="password" id="confirmPassword" name="confPassword" placeholder="Confirm Password"
+                               ng-model="ctrl.confirmPassword" ng-required="true"
+                               ng-focus="confPasswFocus=true;" ng-blur="confPasswFocus=false">
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="text" id="lastName" placeholder="Last Name">
+                        <input class="signup-text-line" id="contactNumber" name="contactNum" placeholder="Contact Number"
+                               ng-model="ctrl.user.ContactNumber">
                     </div>
 
-                    <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="text" id="email" placeholder="Email">
-                    </div>
-
-                    <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="password" id="password" placeholder="Password">
-                    </div>
-
-                    <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="password" id="confirmPassword" placeholder="Confirm Password">
-                    </div>
-
-                    <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" id="contactNumber" placeholder="Contact Number">
+                    <div class="text-center w-full p-t-115">
+                        <p class="error-text error-elem success-elem" ng-show="ctrl.isExistingLogin || ctrl.isSuccessfulSignUp" 
+                           ng-class="{'error-text':ctrl.isExistingLogin, 'success-text':ctrl.isSuccessfulSignUp}"
+                           ng-bind="ctrl.notifText"> </p>
                     </div>
 
                     <div class="container-login100-form-btn p-t-25">
-                        <button type="button" class="signup-button-admin" id="SignUpButton">
-                            Sign up
-                        </button>
+                        <input type="submit" class="signup-button-admin" id="SignUpButton" value="Sign up"
+                                ng-click="ctrl.signUp(ctrl.user)" />
                     </div>
 
                     <div class="text-center w-full p-t-115">
@@ -81,13 +103,15 @@
     </div>
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="lib/angular.min.js"></script>
+    <script src="lib/angular-animate.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/bootstrap/js/popper.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/select2/select2.min.js"></script>
     <!--===============================================================================================-->
+    <script src="scripts/dependencies.js"></script>
     <script src="scripts/Login.js"></script>
-
 </body>
 </html>

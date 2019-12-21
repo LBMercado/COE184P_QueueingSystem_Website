@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="LoginApp">
 <head>
     <!--<title>Login V11</title>
     <meta charset="UTF-8">-->
@@ -25,40 +25,51 @@
 </head>
 <body>
 
-    <div class="limiter">
+    <div class="limiter" ng-controller="LoginController as ctrl">
         <div class="container-login100">
             <div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30">
-                <form class="login100-form validate-form">
+                <form name="loginForm" class="login100-form validate-form">
                     <span class="login100-form-title p-b-50">
                         Login
                     </span>
 
-                    <div class="wrap-input100 validate-input m-b-16" data-validate="Valid email is required: ex@abc.xyz">
-                        <input class="input100" type="text" name="email" placeholder="Email">
+                    <div class="wrap-input100 validate-input m-b-16"
+                         ng-class="{'alert-validate':(loginForm.Email.$dirty && loginForm.Email.$invalid && !emailFocus || (loginForm.Email.$invalid && loginForm.$submitted))}"
+                         data-validate="Valid email is required: ex@abc.xyz">
+                        <input class="input100" type="email" placeholder="Email" name="Email"
+                               ng-model="ctrl.user.Email" ng-required="true"
+                               ng-focus="emailFocus=true;" ng-blur="emailFocus=false">
                         <span class="focus-input100"></span>
                         <span class="symbol-input100">
                             <span class="lnr lnr-envelope"></span>
                         </span>
                     </div>
 
-                    <div class="wrap-input100 validate-input m-b-16" data-validate="Password is required">
-                        <input class="input100" type="password" name="pass" placeholder="Password">
+                    <div class="wrap-input100 validate-input m-b-16"
+                         ng-class="{'alert-validate':(loginForm.Password.$dirty && loginForm.Password.$invalid && !passwFocus || (loginForm.Password.$invalid && loginForm.$submitted))}"
+                         data-validate="Password is required">
+                        <input class="input100" type="password" placeholder="Password" name="Password"
+                               ng-model="ctrl.user.Password" ng-required="true"
+                               ng-focus="passwFocus=true" ng-blur="passwFocus=false">
                         <span class="focus-input100"></span>
                         <span class="symbol-input100">
                             <span class="lnr lnr-lock"></span>
                         </span>
                     </div>
 
-                    <div class="contact100-form-checkbox m-l-4">
-                        <a class="txt1 bo1 hov1" href="#">
-                            Forgot password?
-                        </a>
+                    <div class="text-center w-full p-t-115">
+                        <p class="error-elem error-text"
+                           ng-show="!ctrl.isValidLogin && ctrl.isLoginClickedOnce"
+                           ng-bind="ctrl.errorText"></p>
+                        <p class="success-elem success-text"
+                           ng-show="ctrl.isValidLogin && ctrl.isLoginClickedOnce"
+                           ng-bind="ctrl.successText"></p>
                     </div>
 
                     <div class="container-login100-form-btn p-t-25">
-                        <button class="login100-form-btn">
-                            Login
-                        </button>
+                        <input class="login100-form-btn" type="submit" name="loginButton"
+                               value="Login"
+                               ng-click="ctrl.login(ctrl.user.Email, ctrl.user.Password)" />
                     </div>
 
                     <div class="text-center w-full p-t-115">
@@ -77,6 +88,7 @@
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
     <script src="lib/angular.min.js"></script>
+    <script src="lib/angular-animate.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/bootstrap/js/popper.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -84,7 +96,6 @@
     <script src="vendor/select2/select2.min.js"></script>
     <!--===============================================================================================-->
     <script src="scripts/dependencies.js"></script>
-    <script src="scripts/Login.js"> </script>
-
+    <script src="scripts/Login.js"></script>
 </body>
 </html>

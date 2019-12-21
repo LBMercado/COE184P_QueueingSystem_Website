@@ -1,222 +1,271 @@
-﻿var userInfo;
+﻿var ngLoginApp = angular.module("LoginApp", ["ngAnimate"]);
 
-(function ($) {
-    "use strict";
-    /*==================================================================
-    [ Validate ]*/
-    var input = $(".validate-input .input100");
-    $(".validate-form").on("submit", function () {
-        var check = true;
-        var userType;
-
-        for (var i = 0; i < input.length; i++) {
-            if (validate(input[i]) == false) {
-                showValidate(input[i]);
-                check = false;
-            }
+ngLoginApp.provider("LoginProvider", function () {
+    this.httpConfig = {
+        dataType: "json",
+        contentType: "application/json",
+        headers: {
+            "authorization": "",
+            "access-control-allow-credentials": true
         }
-        if (check) {
-            var email = $(".validate-form .input100[name='email']").val();
-            var pass = $(".validate-form .input100[name='pass']").val();
-            var user;
-            var serviceName = "IsCorrectLogin";
-            var serviceUrl = SERVICE_ENDPOINTURL + serviceName;
-            $.ajax({
-                type: "POST",
-                url: serviceUrl,
-                dataType: "json",
-                contentType: "application/json",
-                headers: {
-                    "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                    "access-control-allow-credentials": true,
-                    "access-control-allow-methods": "GET,POST,OPTIONS"
-                },
-                data: JSON.stringify({
-                    email: email,
-                    password: pass
-                }),
-                async: true,
-                success: function (data, status) {
-                    if (data["IsCorrectLoginResult"] == true) { 
-                        var p = getUser(email, pass);
+    };
+    this.baseUrl = "";
+    this.$get = function () {
+        return {
+            "httpConfig": this.httpConfig,
+            "baseUrl": this.baseUrl
+        };
+    };
+});
 
-                        p.done(() => {
-                            user = userInfo;
-
-                            if (user == null) {
-                            console.log("ERROR: unknown user type returned at successful login.");
-                            window.alert("Something went wrong during login.");
-                            return;
-                            }
-                            setSessionData(user);
-                            if ("AdminID" in user) {
-                                window.location.replace("Main Page - Admin.html");
-                            }
-                            else if ("QueueAttendantID" in user) {
-                                window.location.replace("Main Page - Attendant.html");
-                            }
-                            else {
-                                window.location.replace("Main Page - User.html");
-                            }
-                            });
-                    }
-                    else {
-                        window.alert("Incorrect login details entered.");
-                    }
-                },
-                statusCode: {
-                    401: () => { window.alert('client side: authentication error'); },
-                    404: () => { window.alert('client side: page does not exist.'); },
-                    500: () => { window.alert('server side: general error'); }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    window.alert("Failed to verify credentials, request failure. Error: " + errorThrown);
-                }
-            });
-        }
-        //return false for no page refresh
-        return false;
-    });
-    /*==================================================================
-    [ Validate ]*/
-    var input = $('.validate-input .input100');
-
-    $('.validate-form').on('submit', function () {
-        var check = true;
-
-        for (var i = 0; i < input.length; i++) {
-            if (validate(input[i]) == false) {
-                showValidate(input[i]);
-                check = false;
-            }
-        }
-
-        return check;
-    });
-
-
-    $('.validate-form .input100').each(function () {
-        $(this).focus(function () {
-            hideValidate(this);
+ngLoginApp.service("LoginService", function ($http, $q, LoginProvider) {
+    this.isValidLogin = function (email, password) {
+        var data = {
+            "email": email,
+            "password": password
+        };
+        var serviceName = "IsCorrectLogin";
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify(data),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with login request. Error " +
+                response.statusCode + ": " + response.statusText);
         });
-    });
-
-    function validate(input) {
-        if ($(input).attr('type') == 'email' || $(input).attr('name') == 'email') {
-            if ($(input).val().trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
-                return false;
-            }
-        }
-        else {
-            if ($(input).val().trim() == '') {
-                return false;
-            }
-        }
-    }
-
-    function showValidate(input) {
-        var thisAlert = $(input).parent();
-
-        $(thisAlert).addClass('alert-validate');
-    }
-
-    function hideValidate(input) {
-        var thisAlert = $(input).parent();
-
-        $(thisAlert).removeClass('alert-validate');
-    }
-
-    function getUser(email, pw) {
-        var serviceName = ['LoginAsUser', 'LoginAsAttendant', 'LoginAsAdmin'];
-        var serviceUrl = [];
-        var p = $.when();
-
-        $.each(serviceName, (index, value) => {
-            serviceUrl.push(SERVICE_ENDPOINTURL + value);
+    };
+    this.signInUser = function (email, password) {
+        var data = {
+            "email": email,
+            "password": password
+        };
+        var serviceName = "LoginAsUser";
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify(data),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with sign in request. Error " +
+                response.statusCode + ": " + response.statusText);
         });
-
-        function _loginCallback(loginUrl, loginService) {
-            return $.post({
-                url: loginUrl,
-                dataType: "json",
-                contentType: "application/json",
-                headers: {
-                    "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                    "access-control-allow-credentials": true,
-                    "access-control-allow-methods": "GET,POST,OPTIONS"
-                },
-                data: JSON.stringify({
-                    email: email,
-                    password: pw
-                })})
-                .done((data) => {
-                    if (data[loginService + "Result"] != null)
-                        userInfo = data[loginService + "Result"];
-                })
-                .fail(() => {
-                    console.log("ERROR: unable to login at service \"" + loginService + "\"");
-                });
-        }
-
-        $.each(serviceUrl, (index, value) => {
-            p = p.then(() => {
-                return _loginCallback(value, serviceName[index]);
-            });
-        });
-
-        return p;
-    }
-
-    function setSessionData(user) {
-        if ("AdminID" in user) {
-
-            sessionStorage.setItem("AdminID", user["AdminID"]);
-        }
-        else if ("QueueAttendantID" in user) {
-            sessionStorage.setItem("QueueAttendantID", user["QueueAttendantID"]);
-        }
-        else {
-            sessionStorage.setItem("UserID", user["UserID"]);
-        }
-        sessionStorage.setItem("Email", user["Email"]);
-        sessionStorage.setItem("AccountNumber", user["AccountNumber"]);
-        sessionStorage.setItem("FullName", user["FirstName"] + " " + user["MiddleName"] + " " + user["LastName"]);
-    }
-
-    //SIGNUP
-
-    $("#SignUpButton").on("click", function (e) {
-        var firstName = $("#firstName").val(), middleName = $("#middleName").val(), lastName = $("#lastName").val(),
-            email = $("#email").val(), password = $("#password").val(), confirmPassword = $("#confirmPassword").val(), contactNumber = $("#contactNumber").val();
+    };
+    this.signUpUser = function (user) {
+        var data = user;
         var serviceName = "RegisterAsUser";
-        var serviceUrl = SERVICE_ENDPOINTURL + serviceName;
-        $.ajax({
-            type: "POST",
-            url: serviceUrl,
-            dataType: "json",
-            contentType: "application/json",
-            headers: {
-                "authorization": "Basic " + btoa(basicAuthUser + ":" + basicAuthPass),
-                "access-control-allow-credentials": true,
-                "access-control-allow-methods": "GET,POST,OPTIONS"
-            },
-            data: JSON.stringify({
-                user: {
-                    Email: email,
-                    Password: password,
-                    ContactNumber: contactNumber,
-                    FirstName: firstName,
-                    MiddleName: middleName,
-                    LastName: lastName
-                }
-            }),
-            async: true,
-            success: function (data, status) {
-                alert("Sign Up Successful, Welcome " + firstName);
-                window.location.replace("Login.html"); 
-            }
-        }); 
-    }
-    );
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify({ 'user': data }),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with sign up request. Error " +
+                response.statusCode + ": " + response.statusText);
+        });
+    };
+    this.signInAttendant = function (email, password) {
+        var data = {
+            "email": email,
+            "password": password
+        };
+        var serviceName = "LoginAsAttendant";
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify(data),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with sign in request. Error " +
+                response.statusCode + ": " + response.statusText);
+        });
+    };
+    this.signUpAttendant = function (user) {
+        var data = user;
+        var serviceName = "RegisterAsAttendant";
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify({ 'attendant': data }),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with sign up request. Error " +
+                response.statusCode + ": " + response.statusText);
+        });
+    };
+    this.signInAdmin = function (email, password) {
+        var data = {
+            "email": email,
+            "password": password
+        };
+        var serviceName = "LoginAsAdmin";
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify(data),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with sign in request. Error " +
+                response.statusCode + ": " + response.statusText);
+        });
+    };
+    this.signUpAdmin = function (user) {
+        var data = user;
+        var serviceName = "RegisterAsAdmin";
+        return $http.post(
+            LoginProvider.baseUrl + serviceName,
+            JSON.stringify({ 'admin': data }),
+            LoginProvider.httpConfig
+        ).then((response) => {
+            return response.data[serviceName + "Result"];
+        }, (response) => {
+            return $q.reject("Unable to proceed with sign up request. Error " +
+                response.statusCode + ": " + response.statusText);
+        });
+    };
+});
 
-})(jQuery);
+ngLoginApp.controller("LoginController", function ($window, $timeout, $q, LoginService) {
+    this.user = {
+        "AccountNumber": 0,
+        "ContactNumber": "",
+        "Email": "",
+        "FirstName": "",
+        "LastName": "",
+        "MiddleName": "",
+        "Password": "",
+        "UserID": ""
+    };
+    this.successText = "";
+    this.errorText = "";
+    this.isValidLogin = false;
+    this.isLoginClicked = false;
+    this.isLoginClickedOnce = false;
+    this.login = function (email, password) {
+        if (this.isLoginClicked) return; //prevent repetitive requests
+        if (!email, !password) return;
+        this.isLoginClicked = true;
+        this.isLoginClickedOnce = true;
+        LoginService.isValidLogin(email, password)
+            .then((isValid) => {
+                if (isValid) {
+                    LoginService.signInUser(email, password)
+                        .then((user) => {
+                            if (user == null)
+                                return LoginService.signInAttendant(email, password);
+                            else {
+                                this.successText = "Success! You will be redirected shortly.";
+                                this.isValidLogin = true;
+                                $timeout(() => {
+                                    sessionStorage.setItem("UserID", user["UserID"]);
+                                    sessionStorage.setItem("Email", user["Email"]);
+                                    sessionStorage.setItem("AccountNumber", user["AccountNumber"]);
+                                    this.isLoginClicked = false;
+                                    $window.location.replace("Main Page - User.html");
+                                }, 3000);
+
+                                return $q.reject("Promise chain broken - User type determined as user");
+                            }
+                        })
+                        .then((attendant) => {
+                            if (attendant == null)
+                                return LoginService.signInAdmin(email, password);
+                            else {
+                                this.successText = "Success! You will be redirected shortly.";
+                                this.isValidLogin = true;
+                                $timeout(() => {
+                                    sessionStorage.setItem("QueueAttendantID", attendant["QueueAttendantID"]);
+                                    sessionStorage.setItem("Email", attendant["Email"]);
+                                    sessionStorage.setItem("AccountNumber", attendant["AccountNumber"]);
+                                    $window.location.replace("Main Page - Attendant.html");
+                                    this.isLoginClicked = false;
+                                }, 3000);
+                                return $q.reject("Promise chain broken - User type determined as attendant");
+                            }
+                        })
+                        .then((admin) => {
+                            if (admin == null)
+                                throw "Email and Password do not point to a valid user type.";
+                            else {
+                                this.successText = "Success! You will be redirected shortly.";
+                                this.isValidLogin = true;
+                                $timeout(() => {
+                                    sessionStorage.setItem("AdminID", admin["AdminID"]);
+                                    sessionStorage.setItem("Email", admin["Email"]);
+                                    sessionStorage.setItem("AccountNumber", admin["AccountNumber"]);
+                                    this.isLoginClicked = false;
+                                    $window.location.replace("Main Page - Admin.html");
+                                }, 3000);
+                                return $q.resolve("Promise chain completed - User type determined as admin.");
+                            }
+                        })
+                        .catch((errorResponse) => {
+                            console.log("ERROR: " + errorResponse);
+                        });
+                } else {
+                    this.errorText = "Email or Password entered is invalid.";
+                    this.isValidLogin = false;
+                    this.isLoginClicked = false;
+                }
+            })
+            .catch((reason) => {
+                console.log("ERROR: " + reason);
+            });
+    };
+});
+
+ngLoginApp.controller("SignUpController", function ($window, $timeout, LoginService) {
+    this.user = {
+        "AccountNumber": 0,
+        "ContactNumber": "",
+        "Email": "",
+        "FirstName": "",
+        "LastName": "",
+        "MiddleName": "",
+        "Password": "",
+        "UserID": ""
+    };
+    this.isExistingLogin = false;
+    this.isSuccessfulSignUp = false;
+    this.notifText = "";
+    this.signUp = function (user) {
+        if (typeof user === "undefined" || user == null ||
+            !user.Email || !user.Password ||
+            user.Password != this.confirmPassword)
+            return;
+
+        LoginService.signUpUser(user)
+            .then((success) => {
+                if (success) {
+                    this.isExistingLogin = false;
+                    this.notifText = "Successfully signed up! You will be redirected shortly.";
+                    this.isSuccessfulSignUp = true;
+                    $timeout(() => {
+                        $window.location.replace("Login.html");
+                    }, 3000);
+                }
+                else {
+                    //invalid signup, most likely re-used email
+                    this.notifText = "Email entered is already used.";
+                    this.isExistingLogin = true;
+                    this.isSuccessfulSignUp = false;
+                }
+            })
+            .catch((errorResponse) => {
+                console.log("ERROR: " + errorResponse);
+                this.isSuccessfulSignUp = false;
+                this.isExistingLogin = false;
+            });
+    };
+});
+
+ngLoginApp.config(function (LoginProviderProvider) {
+    LoginProviderProvider.httpConfig.headers.authorization = AUTH_HEADER;
+    LoginProviderProvider.baseUrl = SERVICE_ENDPOINTURL;
+});
