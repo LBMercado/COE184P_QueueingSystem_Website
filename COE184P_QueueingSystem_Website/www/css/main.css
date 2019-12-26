@@ -138,7 +138,7 @@ span.addlanespan {
     font-weight: bold;
 }
 
-    button#QueueIn:hover, button#Back:hover, button#CancelQueue:hover {
+    .queuebutton:hover {
         color: #ef7d46;
         background: #fff;
     }

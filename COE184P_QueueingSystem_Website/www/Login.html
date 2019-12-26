@@ -34,7 +34,7 @@
                     </span>
 
                     <div class="wrap-input100 validate-input m-b-16"
-                         ng-class="{'alert-validate':(loginForm.Email.$dirty && loginForm.Email.$invalid && !emailFocus || (loginForm.Email.$invalid && loginForm.$submitted))}"
+                         ng-class="{'alert-validate':(loginForm.Email.$dirty && loginForm.Email.$invalid && !emailFocus || (loginForm.Email.$invalid && loginForm.$submitted && !emailFocus ))}"
                          data-validate="Valid email is required: ex@abc.xyz">
                         <input class="input100" type="email" placeholder="Email" name="Email"
                                ng-model="ctrl.user.Email" ng-required="true"
@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16"
-                         ng-class="{'alert-validate':(loginForm.Password.$dirty && loginForm.Password.$invalid && !passwFocus || (loginForm.Password.$invalid && loginForm.$submitted))}"
+                         ng-class="{'alert-validate':(loginForm.Password.$dirty && loginForm.Password.$invalid && !passwFocus || (loginForm.Password.$invalid && loginForm.$submitted && !passwFocus))}"
                          data-validate="Password is required">
                         <input class="input100" type="password" placeholder="Password" name="Password"
                                ng-model="ctrl.user.Password" ng-required="true"

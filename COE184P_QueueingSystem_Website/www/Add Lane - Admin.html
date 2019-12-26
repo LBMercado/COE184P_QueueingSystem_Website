@@ -37,10 +37,9 @@
                 <div class="queue--yama">
                     <div class="queue__item">
                         <h3 class="queue__title" id="Department">Add New Lane</h3>
-
                         <div class="container-login100-form-btn" ng-controller="laneInfoController">
                             <p class="text1"
-                                   ng-bind="notifText"></p>
+                               ng-bind="notifText"></p>
                             <div class="addlanedisplayborder">
                                 <div class="addlanedisplay">
                                     <span class="addlanespan">Lane #{{nextLaneNumber}}: {{newLane.LaneName}}</span>
@@ -52,7 +51,8 @@
                                 </div>
                                 <select class="addlaneinput m-b-15" ng-model="selectedAttID"
                                         ng-options="attOpt for attOpt in attOptions"></select>
-                                <button class="queue__action" id="FinalizeAddLane" ng-click="addNewLane(newLane, selectedAttID)">Finalize and Add Lane</button>
+                                <button class="queue__action" id="FinalizeAddLane" 
+                                        ng-click="addNewLane(newLane, selectedAttID)">Finalize and Add Lane</button>
                             </div>
                             <h3 class="header2" id="Department">Available Attendants</h3>
                             <div class="container-login100-form-btn">
@@ -62,14 +62,13 @@
                                     <div class="right p-r-5">Is Assigned: {{att.DesignatedLane.LaneName != null}}</div>
                                 </div>
                             </div>
-
-                                <button class="queue__action" id="Back" ng-click="goToMainPage()">back</button>
-                            </div>
+                            <button class="queue__action" id="Back" ng-click="goToMainPage()">back</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>

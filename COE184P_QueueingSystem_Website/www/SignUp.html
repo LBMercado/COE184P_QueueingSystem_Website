@@ -29,52 +29,82 @@
         <div class="container-login100">
             <div class="wrap-login100 p-l-50 p-r-50 p-t-100 p-b-30" ng-controller="SignUpController as ctrl">
                 <form class="login100-form validate-form" name="signUpForm">
-                    <span class="login100-form-title p-b-50">
-                        Sign up
+                    <span class="login100-form-title p-b-30">
+                        Sign Up
                     </span>
                     <div class="wrap-input100 validate-input m-b-16" data-validate="First Name is Required"
-                         ng-class="{'alert-validate':(signUpForm.fName.$dirty && signUpForm.fName.$invalid && !fNameFocus || ( signUpForm.$submitted && signUpForm.fName.$invalid ) )}">
-                        <input class="signup-text-line" type="text" id="firstName" name="fName" placeholder="First Name"
+                         ng-class="{'alert-validate':(signUpForm.fName.$dirty && signUpForm.fName.$invalid && !fNameFocus || ( signUpForm.$submitted && signUpForm.fName.$invalid && !fNameFocus) )}">
+                        <input class="input100" type="text" id="firstName" name="fName" placeholder="First Name"
                                ng-model="ctrl.user.FirstName" ng-required="true"
                                ng-focus="fNameFocus=true;" ng-blur="fNameFocus=false">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-user"></span>
+                        </span>
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" type="text" id="middleName" name="mName" placeholder="Middle Name"
+                        <input class="input100" type="text" id="middleName" name="mName" placeholder="Middle Name"
                                ng-model="ctrl.user.MiddleName">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-user"></span>
+                        </span>
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16" data-validate="Last Name is Required"
-                         ng-class="{'alert-validate':(signUpForm.lName.$dirty && signUpForm.lName.$invalid && !lNameFocus || ( signUpForm.$submitted && signUpForm.lName.$invalid ) )}">
-                        <input class="signup-text-line" type="text" id="lastName" name="lName" placeholder="Last Name"
+                         ng-class="{'alert-validate':(signUpForm.lName.$dirty && signUpForm.lName.$invalid && !lNameFocus || ( signUpForm.$submitted && signUpForm.lName.$invalid && !lNameFocus) )}">
+                        <input class="input100" type="text" id="lastName" name="lName" placeholder="Last Name"
                                ng-model="ctrl.user.LastName" ng-required="true"
                                ng-focus="lNameFocus=true;" ng-blur="lNameFocus=false">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-user"></span>
+                        </span>
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16" data-validate="Valid email is required: ex@abc.xyz"
-                         ng-class="{'alert-validate':(signUpForm.email.$dirty && signUpForm.email.$invalid && !emailFocus || ( signUpForm.$submitted && signUpForm.email.$invalid ) )}">
-                        <input class="signup-text-line" type="email" id="email" name="email" placeholder="Email"
+                         ng-class="{'alert-validate':(signUpForm.email.$dirty && signUpForm.email.$invalid && !emailFocus || ( signUpForm.$submitted && signUpForm.email.$invalid && !emailFocus) )}">
+                        <input class="input100" type="email" id="email" name="email" placeholder="Email"
                                ng-model="ctrl.user.Email" ng-required="true"
                                ng-focus="emailFocus=true;" ng-blur="emailFocus=false">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-envelope"></span>
+                        </span>
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16" data-validate="Password is required."
-                         ng-class="{'alert-validate':(signUpForm.password.$dirty && signUpForm.password.$invalid && !passwFocus || ( signUpForm.$submitted && signUpForm.password.$invalid ) )}">
-                        <input class="signup-text-line" type="password" id="password" name="password" placeholder="Password"
+                         ng-class="{'alert-validate':(signUpForm.password.$dirty && signUpForm.password.$invalid && !passwFocus || ( signUpForm.$submitted && signUpForm.password.$invalid && !passwFocus) )}">
+                        <input class="input100" type="password" id="password" name="password" placeholder="Password"
                                ng-model="ctrl.user.Password" ng-required="true"
                                ng-focus="passwFocus=true;" ng-blur="passwFocus=false">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-lock"></span>
+                        </span>
                     </div>
 
                     <div class="wrap-input100 validate-input m-b-16" data-validate="Confirm Password does not match."
-                         ng-class="{'alert-validate':(signUpForm.confPassword.$dirty && ctrl.user.Password != ctrl.confirmPassword && !confPasswFocus || ( signUpForm.$submitted && ctrl.user.Password != ctrl.confirmPassword ) )}">
-                        <input class="signup-text-line" type="password" id="confirmPassword" name="confPassword" placeholder="Confirm Password"
+                         ng-class="{'alert-validate':(signUpForm.confPassword.$dirty && ctrl.user.Password != ctrl.confirmPassword && !confPasswFocus || ( signUpForm.$submitted && ctrl.user.Password != ctrl.confirmPassword && !confPasswFocus ) )}">
+                        <input class="input100" type="password" id="confirmPassword" name="confPassword" placeholder="Confirm Password"
                                ng-model="ctrl.confirmPassword" ng-required="true"
                                ng-focus="confPasswFocus=true;" ng-blur="confPasswFocus=false">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-lock"></span>
+                        </span>
                     </div>
 
-                    <div class="wrap-input100 validate-input m-b-16">
-                        <input class="signup-text-line" id="contactNumber" name="contactNum" placeholder="Contact Number"
-                               ng-model="ctrl.user.ContactNumber">
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Contact Number must be composed of numbers and be atleast 11 digits long."
+                             ng-class="{'alert-validate':(signUpForm.contactNum.$dirty && signUpForm.contactNum.$invalid && !contactNumFocus || ( signUpForm.$submitted && signUpForm.contactNum.$invalid && !contactNumFocus ) )}">
+                        <input class="input100" id="contactNumber" name="contactNum" placeholder="Contact Number"
+                               ng-model="ctrl.user.ContactNumber" contact-number-validate
+                               ng-focus="contactNumFocus=true;" ng-blur="contactNumFocus=false">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <span class="lnr lnr-phone"></span>
+                        </span>
                     </div>
 
                     <div class="text-center w-full p-t-115">

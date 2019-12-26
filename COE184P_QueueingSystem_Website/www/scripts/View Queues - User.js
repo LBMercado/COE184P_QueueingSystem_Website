@@ -58,18 +58,18 @@ ngViewQueuesUserApp.factory("viewQueueService", function ($http) {
 
 ngViewQueuesUserApp.controller("queueController", function ($scope, $filter, $window, $q, $timeout, $interval, viewQueueService) {
     $scope.frontQueued = "Looks empty...";
-    $scope.queueNotif = 'QUEUE_INFO';
+    $scope.queueNotif = "";
     $scope.lane = { 'LaneName': 'LANE_NAME_UNSET' };
     $scope.attendant = { 'FirstName': 'ATTENDANT_NAME_UNSET', 'MiddleName': '', 'LastName': '' };
     $scope.userTicket = { 'QueueNumber': 'Not Queued' };
     $scope.userInfo = { "Email": "" };
-    $scope.userInfo.Email = sessionStorage.getItem("Email");
     $scope.isQueued = false;
     $scope.notifText = "";
 
     $timeout(() => {
         var laneNumber = sessionStorage.getItem("LaneNumber");
         var acctNumber = sessionStorage.getItem("AccountNumber");
+        $scope.userInfo.Email = sessionStorage.getItem("Email");
         /*-----------------------------------------------------------------------*/
         viewQueueService.getQueuedQueueNumbers(laneNumber)
             .then((data, status) => {
