@@ -260,7 +260,7 @@ ngEditLaneApp.controller("laneEditAttController", ["laneInfoService", "attendant
         $scope.sharedDataSet_availAtts = function (availAtts) { sharedDataFactory.update_availAtts(availAtts); };
         $scope.sharedDataSet_notifText = function (text) { sharedDataFactory.update_notifText(text) };
         $scope.sharedDataSet_selAttID(this.selAttID);
-        
+
         var laneNumber = sessionStorage.getItem("LaneNumber");
         this.thisLane = {};
         this.thisLane["LaneNumber"] = laneNumber;

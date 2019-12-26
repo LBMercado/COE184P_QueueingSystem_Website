@@ -112,8 +112,10 @@ ngAddUserApp.controller("addUserController",
             this.addNewUser = function (newUser, confirmPassw) {
                 if (typeof newUser === "undefined" || newUser == null ||
                     !newUser.Email || !newUser.Password ||
-                    newUser.Password != confirmPassw)
-                    return;
+                    newUser.Password != confirmPassw) return;
+                if (newUser.ContactNumber &&
+                    (isNaN(newUser.ContactNumber) ||
+                    newUser.ContactNumber.length < 11)) return;
                 if (this.isAddClicked) return; //prevent repetitive clicking
                 this.isAddClicked = true;
                 determineUserAndAdd(newUser, this.selUserType)
@@ -152,3 +154,25 @@ ngAddUserApp.controller("addUserController",
             };
         }]);
 /*CONTROLLERS--------------------------------------------------------------------*/
+/*CUSTOM DIRECTIVES--------------------------------------------------------------------*/
+ngAddUserApp.directive("contactNumberValidate", function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attr, modelCtrl) {
+            function validateContactNum(value) {
+                if (!value) { //accept null contact numbers
+                    modelCtrl.$setValidity('contactNum', true);
+                } else if (isNaN(value)) {
+                    modelCtrl.$setValidity('contactNum', false);
+                } else if (value.length < 11){
+                    modelCtrl.$setValidity('contactNum', false);
+                } else {
+                    modelCtrl.$setValidity('contactNum', true);
+                }
+                return value;
+            }
+            modelCtrl.$parsers.push(validateContactNum);
+        }
+    };
+});
+/*CUSTOM DIRECTIVES--------------------------------------------------------------------*/

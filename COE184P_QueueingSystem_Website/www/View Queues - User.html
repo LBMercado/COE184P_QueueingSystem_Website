@@ -31,6 +31,9 @@
                 <label id="User">
                     <a class="txt hov1" href="#" ng-model="userInfo" ng-init="userInfo = { 'Email':'USER_PLACEHOLDER_EMAIL' }">{{userInfo.Email}}</a>
                 </label>
+                <a href="Main Page - User.html">
+                    <input type="button" class="backbutton" id="Back">
+                </a>
                 <div class="queue--yama">
                     <div class="queue__item" ng-model="queueList">
                         <h3 class="queue__title" id="Department" ng-model="lane">{{lane.LaneName}}</h3>
@@ -48,13 +51,13 @@
                             <p class="txt1"
                                ng-bind="notifText"></p>
                         </div>
-                        <button id="QueueIn" ng-click="enqueueUser()" ng-disabled="isQueued">
+                        <button class="queuebutton" id="QueueIn" ng-click="enqueueUser()" ng-disabled="isQueued">
                             Queue In
                         </button>
-                        <button id="CancelQueue" ng-click="cancelQueue()" ng-disabled="!isQueued">
+                        <button class="queuebutton" id="CancelQueue" ng-click="cancelQueue()" ng-disabled="!isQueued">
                             Cancel Queue
                         </button>
-                        <button id="Back" ng-click="goBackToMainPage()">
+                        <button class="queuebutton" ng-click="goBackToMainPage()">
                             Back
                         </button>
                     </div>

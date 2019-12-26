@@ -239,7 +239,9 @@ ngLoginApp.controller("SignUpController", function ($window, $timeout, LoginServ
             !user.Email || !user.Password ||
             user.Password != this.confirmPassword)
             return;
-
+        if (user.ContactNumber &&
+            (isNaN(user.ContactNumber) ||
+            user.ContactNumber.length < 11)) return;
         LoginService.signUpUser(user)
             .then((success) => {
                 if (success) {
@@ -269,3 +271,26 @@ ngLoginApp.config(function (LoginProviderProvider) {
     LoginProviderProvider.httpConfig.headers.authorization = AUTH_HEADER;
     LoginProviderProvider.baseUrl = SERVICE_ENDPOINTURL;
 });
+
+/*CUSTOM DIRECTIVES--------------------------------------------------------------------*/
+ngLoginApp.directive("contactNumberValidate", function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attr, modelCtrl) {
+            function validateContactNum(value) {
+                if (!value) { //accept null contact numbers
+                    modelCtrl.$setValidity('contactNum', true);
+                } else if (isNaN(value)) {
+                    modelCtrl.$setValidity('contactNum', false);
+                } else if (value.length < 11){
+                    modelCtrl.$setValidity('contactNum', false);
+                } else {
+                    modelCtrl.$setValidity('contactNum', true);
+                }
+                return value;
+            }
+            modelCtrl.$parsers.push(validateContactNum);
+        }
+    };
+});
+/*CUSTOM DIRECTIVES--------------------------------------------------------------------*/

@@ -7,9 +7,9 @@ ngViewInfoAllApp.factory("viewInfoService", function ($http) {
         dataType: "json",
         contentType: "application/json",
         headers: {
-                "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
-                "access-control-allow-credentials": true
-            }
+            "authorization": "Basic " + btoa(BASIC_AUTH_USER + ":" + BASIC_AUTH_PASSW),
+            "access-control-allow-credentials": true
+        }
     };
 
     viewInfoService.isUser = function (accountNumber) {
@@ -86,14 +86,10 @@ ngViewInfoAllApp.controller("userInfoController", function ($scope, $location, $
                             }, (status) => { console.log("ERROR: Unable to retrieve user account."); });;
                     }
                 }, (status) => { console.log("ERROR: Unable to retrieve user type as user."); });
-
-            
-
-
         });
     },
         500);
-    $scope.goBackToMainPage = function (userType){
+    $scope.goBackToMainPage = function (userType) {
         switch (userType) {
             case "User":
                 $window.location.replace("Main Page - User.html");
